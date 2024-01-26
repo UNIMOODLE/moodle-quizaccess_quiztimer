@@ -1,0 +1,52 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_quiz/question_slot
+
+    This template renders the question slot content.
+
+    Example context (json):
+    {
+       
+    }
+}}
+
+<div class="mod-indent-outer" id="mod-indent-outer-slot-{{slotid}}">
+    {{{questionnumber}}}
+    <div class="mod-indent"></div>
+    <div class="activityinstance">
+        {{{questionname}}}
+    </div>
+    <span class="actions bg-white ml-5 h-auto py-2">
+        <span class="time">
+            <t id="question-time-{{slotid}}" class="question-time"></t>
+            <a href="#" class="editing-question-time">
+                <i class="icon fa fa-pencil fa-fw editicon visibleifjs"></i>
+            </a>
+            
+        </span>
+        
+    </span>
+    <div class="mod-indent">
+        
+        <select name="select" class="time-select form-control mr-4 h-auto version-selection" id="question-time-{{slotid}}">
+            <option value="0" >{{#str}} timeunit, quizaccess_quiztimer{{/str}}</option>
+            <option value="1">{{#str}} seconds, quizaccess_quiztimer{{/str}}</option>
+            <option value="2">{{#str}} minutes, quizaccess_quiztimer{{/str}}</option>
+            <option value="3">{{#str}} hours, quizaccess_quiztimer{{/str}}</option>
+        </select>
+    </div>
+
+    
+</div>

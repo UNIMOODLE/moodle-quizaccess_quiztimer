@@ -1,0 +1,25 @@
+<span class="section-box ml-5">
+    <span class="time bg-gray py-2">
+        <span id="section-time-{{id}}" class="section-time"></span>
+        <a href="#" class="editing-section-time">
+            <i class="icon fa fa-pencil fa-fw editicon visibleifjs"></i>
+        </a>
+        
+    </span>
+    
+</span>
+<div class="mod-indent">
+    
+    <select name="select" class="time-select form-control pl-5 ml-3 h-auto version-selection" id="question-time-{{slotid}}">
+        <option value="0">{{#str}} timeunit, quizaccess_quiztimer{{/str}}</option>
+        <option value="1">{{#str}} seconds, quizaccess_quiztimer{{/str}}</option>
+        <option value="2" selected>{{#str}} minutes, quizaccess_quiztimer{{/str}}</option>
+        <option value="3">{{#str}} hours, quizaccess_quiztimer{{/str}}</option>    
+    </select>
+    
+</div>
+<span class="section-box ml-5">
+<span>{{#str}} totalsectiontime, quizaccess_quiztimer{{/str}}</span>
+        <span class="total-section-time"></span> 
+        <span class="total-section-unit"></span>   
+</span>
