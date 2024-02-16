@@ -54,3 +54,17 @@ $string['seconds'] = 'segundos';
 $string['distributesectiontime'] = 'Dividir tiempo sección en paginas';
 $string['sectiontime'] = 'Tiempo por secciones';
 $string['questiontime'] = 'Tiempo por preguntas';
+
+$string['setting:timedsections'] = 'Tiempo por defecto de secciones';
+$string['setting:timedsections_desc'] = 'Tiempo por defecto de secciones desc';
+$string['setting:timedslots'] = 'Tiempo por defecto de preguntas';
+$string['setting:timedslots_desc'] = 'Tiempo por defecto de preguntas desc';
+$string['unitsections'] = 'Unidad usada para las secciones por defecto';
+$string['unitslots'] = 'Unidad usada para las preguntas por defecto';
+
+$string['quiztimer'] = 'Zona de mensajes de tiempos del quiz:';
+$string['requirequiztimermessage'] = 'Este quiz utiliza tiempos personalizados para las preguntas y secciones.';
+$string['quizquiztimer'] = 'Tiempo del quiz';
+$string['quiztimererrors'] = 'Tiempos del quiz que necesitan ser reajustados para poder continuar:';
+$string['warningtime'] = 'Tiempo no válido, introduzca otro';
+$string['invalidsettedtime'] = 'Tiempo introducido invalido, se ha restablecido al valor anterior';

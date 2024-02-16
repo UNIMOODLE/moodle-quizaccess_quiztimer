@@ -114,6 +114,9 @@ class quizaccess_quiztimer_external extends external_api {
         $params = ['slot' => $questionid, 'quizid' => $quizid];
         $timedslot = $DB->get_record_sql($sql, $params);
         $timedata = json_decode($timedata);
+        if ($timedata->value == 0 || $timedata->unit == 0) {
+            return json_encode($timedata);
+        }
         $timenow = (new \DateTime('now', \core_date::get_server_timezone_object()))->getTimestamp();
         if ($timedslot === false) {
             $timedslot = new stdClass();
@@ -352,7 +355,7 @@ class quizaccess_quiztimer_external extends external_api {
                 $quizoption = 3;
                 break;
             case 'equitative':
-                $quizoption = 1;
+                $quizoption = 4;
                 break;
             default:
                 $e = null;

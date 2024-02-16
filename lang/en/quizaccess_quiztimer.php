@@ -53,15 +53,21 @@ $string['hours'] = 'hours';
 $string['minutes'] = 'minutes';
 $string['seconds'] = 'seconds';
 $string['distributesectiontime'] = 'Distribute the section time in pages';
+$string['timelimit'] = 'Time limit';
 $string['sectiontime'] = 'Time for section';
+$string['pagetime'] = 'Time for page';
 $string['questiontime'] = 'Time for question';
 
 $string['setting:timedsections'] = 'Section default time';
 $string['setting:timedsections_desc'] = 'Section default time desc';
 $string['setting:timedslots'] = 'Slot default time';
 $string['setting:timedslots_desc'] = 'Slot default time desc';
-$string['setting:timedpages'] = 'Page default time';
-$string['setting:timedpages_desc'] = 'Page default time desc';
 $string['unitsections'] = 'Sections unit used';
 $string['unitslots'] = 'Slots unit used';
-$string['unitpages'] = 'Pages unit used';
+
+$string['quiztimer'] = 'Quiz times message zone:';
+$string['requirequiztimermessage'] = 'This quiz uses a custom time limit for questions and sections.';
+$string['quizquiztimer'] = 'Quiz timer';
+$string['quiztimererrors'] = 'Quiz setted timers that need attention to allow the quiz execution:';
+$string['warningtime'] = 'Invalid time setted';
+$string['invalidsettedtime'] = 'Tiempo introducido invalido, se ha restablecido al valor anterior';

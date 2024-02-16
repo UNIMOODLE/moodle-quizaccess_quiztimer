@@ -40,6 +40,7 @@ define(['jquery', 'core/str'], function($, str) {
                         $.when(selectstrings).done(function(selectstrings) {
                             select = document.createElement('select');
                             select.setAttribute('class', 'custom-select urlselect timeselect');
+                            select.setAttribute('id', 'id_quiztimer_editviewselector');
 
                             if (editmethod == 'time') {
                                 select.add(new Option(selectstrings[1], '/mod/quiz/accessrule/quiztimer/edit.php?cmid=' + cmid +
