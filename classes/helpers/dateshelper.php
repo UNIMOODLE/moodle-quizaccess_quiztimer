@@ -12,9 +12,17 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+// Project implemented by the \"Recovery, Transformation and Resilience Plan.
+// Funded by the European Union - Next GenerationEU\".
+//
+// Produced by the UNIMOODLE University Group: Universities of
+// Valladolid, Complutense de Madrid, UPV/EHU, León, Salamanca,
+// Illes Balears, Valencia, Rey Juan Carlos, La Laguna, Zaragoza, Málaga,
+// Córdoba, Extremadura, Vigo, Las Palmas de Gran Canaria y Burgos.
 
-/*
+/**
+ * Version details
  *
  * @package    quizaccess_quiztimer
  * @copyright  2023 Proyecto UNIMOODLE
@@ -26,8 +34,20 @@
 namespace quizaccess_quiztimer\helpers;
 
 
+/**
+ * Class with helper methods to work with dates.
+ *
+ */
 class dateshelper {
 
+
+    /**
+     * Get the time in seconds based on the time unit and value provided.
+     *
+     * @param mixed $timeunit The unit of time (1, 2, or 3)
+     * @param mixed $timevalue The value corresponding to the time unit
+     * @return string The time in seconds calculated based on the unit and value
+     */
     public static function get_quiz_time($timeunit, $timevalue) : string {
         switch ($timeunit) {
             case 1:

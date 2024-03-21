@@ -24,7 +24,7 @@
 /**
  * Version details
  *
- * @package    local_quiztimer
+ * @package    quizaccess_quiztimer
  * @copyright  2023 Proyecto UNIMOODLE
  * @author     UNIMOODLE Group (Coordinator) <direccion.area.estrategia.digital@uva.es>
  * @author     ISYC <soporte@isyc.com>
@@ -46,23 +46,30 @@ class quiz_options {
      * @return string
      */
     public function get_quiz_option($quizid) : string {
-        global $CFG, $DB;
+        global $CFG, $DB, $USER;
 
-        $sql = "SELECT quiz_mode FROM {quizaccess_quiztimer} WHERE quiz = :quizid";
-        $params = ['quizid' => $quizid];
-        $option = $DB->get_record_sql($sql, $params);
+        $option = $DB->get_record('quizaccess_quiztimer', ['quiz' => $quizid]);
         if (!$option) {
+            $quiztimercfg = new \stdClass();
+            $quiztimercfg->quiz = $quizid;
+            $quiztimercfg->quiz_mode = 2;
+            $quiztimercfg->usermodified = $USER->id;
+            $quiztimercfg->timecreated = time();
+            $DB->insert_record('quizaccess_quiztimer', $quiztimercfg);
             return 'section';
         }
         switch ($option->quiz_mode) {
             case 1:
-                return 'equitative';
+                return 'timelimit';
                 break;
             case 2:
                 return 'section';
                 break;
             case 3:
                 return 'slots';
+                break;
+            case 4:
+                return 'equitative';
                 break;
             default:
                 return 'section';
@@ -81,14 +88,14 @@ class quiz_options {
         global $CFG, $DB, $USER;
 
         switch ($selected) {
-            case 'equitative':
-                $option = 1;
-                break;
             case 'section':
                 $option = 2;
                 break;
             case 'slots':
                 $option = 3;
+                break;
+            case 'equitative':
+                $option = 4;
                 break;
             default:
                 $option = false;

@@ -24,7 +24,7 @@
 /**
  * Version details
  *
- * @package    local_quiztimer
+ * @package    quizaccess_quiztimer
  * @copyright  2023 Proyecto UNIMOODLE
  * @author     UNIMOODLE Group (Coordinator) <direccion.area.estrategia.digital@uva.es>
  * @author     ISYC <soporte@isyc.com>
@@ -47,18 +47,19 @@ $string['submit'] = 'Submit';
 $string['quiztime'] = 'Ajustar tiempos por pregunta';
 $string['timeunit'] = '...';
 $string['totalsectiontime'] = 'Tiempo total de sección:';
-$string['pagetime'] = 'Tiempo total:';
 $string['hours'] = 'horas';
 $string['minutes'] = 'minutos';
 $string['seconds'] = 'segundos';
 $string['distributesectiontime'] = 'Dividir tiempo sección en paginas';
+$string['timelimit'] = 'Tiempo límite';
 $string['sectiontime'] = 'Tiempo por secciones';
+$string['pagetime'] = 'Tiempo por páginas';
 $string['questiontime'] = 'Tiempo por preguntas';
 
 $string['setting:timedsections'] = 'Tiempo por defecto de secciones';
-$string['setting:timedsections_desc'] = 'Tiempo por defecto de secciones desc';
+$string['setting:timedsections_desc'] = 'Tiempo por defecto usado en las secciones creadas';
 $string['setting:timedslots'] = 'Tiempo por defecto de preguntas';
-$string['setting:timedslots_desc'] = 'Tiempo por defecto de preguntas desc';
+$string['setting:timedslots_desc'] = 'Tiempo por defecto usado en las preguntas creadas';
 $string['unitsections'] = 'Unidad usada para las secciones por defecto';
 $string['unitslots'] = 'Unidad usada para las preguntas por defecto';
 
@@ -68,3 +69,11 @@ $string['quizquiztimer'] = 'Tiempo del quiz';
 $string['quiztimererrors'] = 'Tiempos del quiz que necesitan ser reajustados para poder continuar:';
 $string['warningtime'] = 'Tiempo no válido, introduzca otro';
 $string['invalidsettedtime'] = 'Tiempo introducido invalido, se ha restablecido al valor anterior';
+
+$string['canteditquiztimes'] = 'No puede editar los tiempos de las preguntas porque este cuestionario ya ha sido respondido. ({$a})';
+$string['eventslottimerupdated'] = 'Tiempo de pregunta actualizado';
+$string['eventsectiontimerupdated'] = 'Tiempo de sección actualizado';
+$string['quiztimer:manage'] = 'Gestiona los ajustes de los tiempos de las reglas de acceso quiztimer';
+
+$string['eventslottimerupdateddescription'] = 'El usuario con id {$a->userid} ha actualizado el temporizador de la pregunta con id {$a->slot} con un nuevo tiempo de {$a->timevalue} {$a->timeunit}';
+$string['eventsectiontimerupdateddescription'] = 'El usuario con id {$a->userid} ha actualizado el temporizador de la sección con id {$a->section} con un nuevo tiempo de {$a->timevalue} {$a->timeunit}';

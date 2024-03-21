@@ -24,7 +24,7 @@
 /**
  * Version details
  *
- * @package    local_quiztimer
+ * @package    quizaccess_quiztimer
  * @copyright  2023 Proyecto UNIMOODLE
  * @author     UNIMOODLE Group (Coordinator) <direccion.area.estrategia.digital@uva.es>
  * @author     ISYC <soporte@isyc.com>
@@ -34,7 +34,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'quizaccess_quiztimer';
-$plugin->release = '0.2.5';
-$plugin->version = 20230713170;
+$plugin->release = '0.9.0';
+$plugin->version = 2024032001;
 $plugin->requires = 2022041900;
 $plugin->maturity = MATURITY_ALPHA;

@@ -24,7 +24,7 @@
 /**
  * Version details
  *
- * @package    local_quiztimer
+ * @package    quizaccess_quiztimer
  * @copyright  2023 Proyecto UNIMOODLE
  * @author     UNIMOODLE Group (Coordinator) <direccion.area.estrategia.digital@uva.es>
  * @author     ISYC <soporte@isyc.com>
@@ -79,7 +79,7 @@ class quizaccess_quiztimer_external extends external_api {
      * info about the returned object
      */
     public static function get_quiz_id_returns() {
-        // TODO.
+        return null;
     }
 
     /**
@@ -105,7 +105,7 @@ class quizaccess_quiztimer_external extends external_api {
      * @return string json encoded info of the time inserted | updated in the db
      */
     public static function set_question_time($quizid, $questionid, $timedata) {
-        global $DB, $CFG;
+        global $DB, $CFG, $USER;
         $params = self::validate_parameters(
             self::set_question_time_parameters(),
                 ["quizid" => $quizid, "questionid" => $questionid, "timedata" => $timedata]
@@ -133,6 +133,39 @@ class quizaccess_quiztimer_external extends external_api {
             $timedslot->timemodified = $timenow;
             $DB->update_record('quizaccess_timedslots', $timedslot);
         }
+        switch($timedslot->timeunit) {
+            case 1:
+                $timeunit = get_string('seconds');
+                $timevalue = $timedslot->timevalue;
+                break;
+            case 2:
+                $timeunit = get_string('minutes');
+                $timevalue = $timedslot->timevalue / 60;
+                break;
+            case 3:
+                $timeunit = get_string('hours');
+                $timevalue = $timedslot->timevalue / 3600;
+                break;
+            default:
+                $timeunit = '';
+                $timevalue = 0;
+                break;
+        }
+        list($course, $cm) = get_course_and_cm_from_instance($quizid, 'quiz');
+        $event = \quizaccess_quiztimer\event\slot_timer_updated::create([
+            'objectid' => $timedslot->slot,
+            'context' => \context_module::instance($cm->id),
+            'relateduserid' => $USER->id,
+            'other' => [
+                'userid' => $USER->id,
+                'slot' => $timedslot->slot,
+                'timevalue' => $timevalue,
+                'timeunit' => $timeunit,
+            ],
+        ]);
+
+        $event->trigger();
+
         return json_encode($timedslot);
     }
 
@@ -140,7 +173,7 @@ class quizaccess_quiztimer_external extends external_api {
      * info about the returned object
      */
     public static function set_question_time_returns() {
-        // TODO.
+        return null;
     }
 
     /**
@@ -197,7 +230,7 @@ class quizaccess_quiztimer_external extends external_api {
      * info about the returned object.
      */
     public static function get_question_time_returns() {
-        // TODO.
+        return null;
     }
 
     /**
@@ -222,7 +255,7 @@ class quizaccess_quiztimer_external extends external_api {
      * @return string json encoded information about setted section
      */
     public static function set_section_time($quizid, $sectionid, $timedata) {
-        global $DB, $CFG;
+        global $DB, $CFG, $USER;
         $params = self::validate_parameters(
             self::set_section_time_parameters(),
                 ["quizid" => $quizid, "sectionid" => $sectionid, "timedata" => $timedata]
@@ -251,6 +284,39 @@ class quizaccess_quiztimer_external extends external_api {
             $timedsection->timemodified = $timenow;
             $DB->update_record('quizaccess_timedsections', $timedsection);
         }
+        switch($timedsection->timeunit) {
+            case '1':
+                $timeunit = get_string('seconds');
+                $timevalue = $timedsection->timevalue;
+                break;
+            case '2':
+                $timeunit = get_string('minutes');
+                $timevalue = $timedsection->timevalue / 60;
+                break;
+            case '3':
+                $timeunit = get_string('hours');
+                $timevalue = $timedsection->timevalue / 3600;
+                break;
+            default:
+                $timeunit = '';
+                $timevalue = 0;
+                break;
+        }
+        list($course, $cm) = get_course_and_cm_from_instance($quizid, 'quiz');
+        $event = \quizaccess_quiztimer\event\section_timer_updated::create([
+            'objectid' => $timedsection->sectionid,
+            'context' => \context_module::instance($cm->id),
+            'relateduserid' => $USER->id,
+            'other' => [
+                'userid' => $USER->id,
+                'section' => $timedsection->sectionid,
+                'timevalue' => $timevalue,
+                'timeunit' => $timeunit,
+            ],
+        ]);
+
+        $event->trigger();
+
         return json_encode($timedsection);
     }
 
@@ -258,7 +324,7 @@ class quizaccess_quiztimer_external extends external_api {
      * info about the returned object.
      */
     public static function set_section_time_returns() {
-        // TODO.
+        return null;
     }
 
     /**
@@ -316,7 +382,7 @@ class quizaccess_quiztimer_external extends external_api {
      * info about the returned object.
      */
     public static function get_section_time_returns() {
-        // TODO.
+        return null;
     }
 
 
@@ -345,6 +411,7 @@ class quizaccess_quiztimer_external extends external_api {
             self::repaginate_slots_parameters(),
                 ["quizid" => $quizid, "editmethod" => $editmethod]
         );
+        $e = null;
         switch ($editmethod) {
             case 'section':
                 $e = 0;
@@ -373,7 +440,7 @@ class quizaccess_quiztimer_external extends external_api {
      * info about the returned object
      */
     public static function repaginate_slots_returns() {
-        // TODO.
+        return null;
     }
 
     /**
@@ -418,17 +485,13 @@ class quizaccess_quiztimer_external extends external_api {
                 }
             }
         } else {
-            $sql = "SELECT slot, timeunit, timevalue FROM {quizaccess_timedslots} WHERE quizid = :quizid";
-            $slots = $DB->get_records_sql($sql, $param);
-            $sql = "SELECT id FROM {quiz_slots} WHERE quizid = :quizid";
-            $activeslots = $DB->get_records_sql($sql, $param);
+            $slots = $DB->get_records('quizaccess_timedslots', $param, 'slot, timeunit, timevalue');
+            $activeslots = $DB->get_records('quiz_slots', $param, 'id');
             foreach ($activeslots as $activeslot) {
                 $activeids[] = (int)$activeslot->id;
             }
-            foreach ($slots as $id => $timevalue) {
-                if (in_array($id, $activeids, true)) {
-                    $e->time += $timevalue->timevalue;
-                }
+            foreach ($slots as $slot) {
+                    $e->time += $slot->timevalue;
             }
         }
 
@@ -439,7 +502,7 @@ class quizaccess_quiztimer_external extends external_api {
      * info about the returned object
      */
     public static function get_quiz_time_returns() {
-        // TODO.
+        return null;
     }
 
 }

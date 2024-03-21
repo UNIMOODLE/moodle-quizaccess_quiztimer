@@ -24,7 +24,7 @@
 /**
  * Version details
  *
- * @package    local_quiztimer
+ * @package    quizaccess_quiztimer
  * @copyright  2023 Proyecto UNIMOODLE
  * @author     UNIMOODLE Group (Coordinator) <direccion.area.estrategia.digital@uva.es>
  * @author     ISYC <soporte@isyc.com>
@@ -104,6 +104,12 @@ class sections_settings extends persistent {
         return $config;
     }
 
+    /**
+     * Retrieves the ID of the first section that is not in the given quiz ID.
+     *
+     * @param int $quizid The ID of the quiz.
+     * @return int The ID of the section.
+     */
     protected static function get_sectionid(int $quizid) : int {
         global $DB;
         $sql = "SELECT DISTINCT qs.id

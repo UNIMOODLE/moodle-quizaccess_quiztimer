@@ -24,7 +24,7 @@
 /**
  * Version details
  *
- * @package    local_quiztimer
+ * @package    quizaccess_quiztimer
  * @copyright  2023 Proyecto UNIMOODLE
  * @author     UNIMOODLE Group (Coordinator) <direccion.area.estrategia.digital@uva.es>
  * @author     ISYC <soporte@isyc.com>
@@ -37,8 +37,10 @@ use quizaccess_quiztimer\quiz_options;
  * Hook to add the times edit form
  */
 function quizaccess_quiztimer_before_standard_html_head() {
-    global $CFG, $PAGE, $DB;
-    if ($PAGE->pagetype == "mod-quiz-edit") {
+    global $CFG, $PAGE, $DB, $USER;
+
+    if ($PAGE->pagetype == "mod-quiz-edit" && has_capability('quizaccess/quiztimer:manage',
+        context_module::instance($PAGE->cm->id), $USER->id)) {
         $e = optional_param('editmethod', null, PARAM_TEXT);
         if ($e === null) {
             $quizopt = new quiz_options();

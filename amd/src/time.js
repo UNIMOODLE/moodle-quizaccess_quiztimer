@@ -37,41 +37,38 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, aja
      */
     const questiontime = async function(e) {
         const invalidsettedtime = await str.get_string('invalidsettedtime', 'quizaccess_quiztimer');
-        target = e.currentTarget;
+        let target = e.currentTarget;
         if (e.key === 'Enter') {
-            timevalue = target.value
+            let timevalue = target.value;
             target.value = timevalue.replace(/[^0-9].*$/,'');
-            timevalue = target.value
-            timedisplay = target.closest('.time').querySelector('.question-time')
+            timevalue = target.value;
+            let timedisplay = target.closest('.time').querySelector('.question-time');
             if(timevalue == '') {
                 notification.addNotification({
                     message: invalidsettedtime,
                     type: "error"
                  });
-                window.scrollTo({ top: 0, behavior: 'smooth' })
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             } else if (timevalue == 0) {
                 notification.addNotification({
                     message: invalidsettedtime,
                     type: "error"
                  });
-                window.scrollTo({ top: 0, behavior: 'smooth' })
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             } else {
-                timedisplay.innerHTML = timevalue
+                timedisplay.innerHTML = timevalue;
             }
-            timedisplay.removeAttribute('style')
+            timedisplay.removeAttribute('style');
 
-            timeid = timedisplay.getAttribute('id') + '-edit';
+            let timeid = timedisplay.getAttribute('id') + '-edit';
             $('#' + timeid).remove();
             set_question_time_call(timedisplay);
-            let timetype = document.querySelector('input[name="timetype"]')
-            display_quiz_time(timetype.value);
-
         } else if (e.key === 'Escape') {
-            timedisplay = target.closest('.time').querySelector('.question-time')
-            timedisplay.removeAttribute('style')
-            this.remove()
+            let timedisplay = target.closest('.time').querySelector('.question-time');
+            timedisplay.removeAttribute('style');
+            this.remove();
         }
-    }
+    };
 
     /**
      * When a key is pressed, editing a section time,
@@ -83,41 +80,38 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, aja
      */
     const sectiontime = async function(e) {
         const invalidsettedtime = await str.get_string('invalidsettedtime', 'quizaccess_quiztimer');
-        target = e.currentTarget;
+        let target = e.currentTarget;
         if (e.key === 'Enter') {
             target.value = target.value.replace(/[^0-9].*$/,'');
-            timevalue = target.value
-            timedisplay = target.closest('.section-heading').querySelector('.section-time')
-            timedisplay.innerHTML = timevalue
+            let timevalue = target.value;
+            let timedisplay = target.closest('.section-heading').querySelector('.section-time');
+            timedisplay.innerHTML = timevalue;
             if(timevalue == '') {
                 timedisplay.innerHTML = 0;
                 notification.addNotification({
                     message: invalidsettedtime,
                     type: "error"
                  });
-                window.scrollTo({ top: 0, behavior: 'smooth' })
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             } else if (timevalue == 0) {
                 notification.addNotification({
                     message: invalidsettedtime,
                     type: "error"
                  });
-                window.scrollTo({ top: 0, behavior: 'smooth' })
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             }
-            timedisplay.removeAttribute('style')
-            timeid = timedisplay.getAttribute('id') + '-edit';
+            timedisplay.removeAttribute('style');
+            let timeid = timedisplay.getAttribute('id') + '-edit';
             $('#' + timeid).remove();
-            timedata = get_section_time_from_slots(timedisplay.closest('.section-heading'));
+            let timedata = get_section_time_from_slots(timedisplay.closest('.section-heading'));
             set_section_time_call(timedisplay.closest('.section.main.clearfix'),
                 parseFloat(timedata.unit), parseFloat(timedata.value));
-            let timetype = document.querySelector('input[name="timetype"]')
-            display_quiz_time(timetype.value);
-
         } else if (e.key === 'Escape') {
-            timedisplay = target.closest('.section-heading').querySelector('.section-time')
-            timedisplay.removeAttribute('style')
-            this.remove()
+            let timedisplay = target.closest('.section-heading').querySelector('.section-time');
+            timedisplay.removeAttribute('style');
+            this.remove();
         }
-    }
+    };
 
     /**
      * Adjust the question time to display, when a new
@@ -127,17 +121,15 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, aja
      * @param {event} e
      */
     const adjust_question_time_display = function (e) {
-        selectedoption = e.currentTarget;
+        let selectedoption = e.currentTarget;
         value = selectedoption.value;
-        timedata = get_question_time(selectedoption.closest('.slot'));
+        let timedata = get_question_time(selectedoption.closest('.slot'));
         let value = parseFloat(timedata.value);
-        if (timedata.value !== '0' && !isNaN(timedata.value)) {
+        if (value !== 0 && !isNaN(value)) {
             selectedoption.options[0].setAttribute('disabled', 'true');
             set_question_time_call(selectedoption);
-            let timetype = document.querySelector('input[name="timetype"]')
-            display_quiz_time(timetype.value);
         }
-    }
+    };
 
     /**
      * Adjust the section time to display, when a new
@@ -147,32 +139,29 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, aja
      * @param {event} e
      */
     const adjust_section_time_display = function (e) {
-        selectedoption = e.currentTarget;
-        section = selectedoption.closest('.section.main.clearfix');
-        unit = selectedoption.value;
-        value = parseFloat(section.querySelector('.section-time').innerHTML);
+        let selectedoption = e.currentTarget;
+        let section = selectedoption.closest('.section.main.clearfix');
+        let unit = selectedoption.value;
+        let value = parseFloat(section.querySelector('.section-time').innerHTML);
         if ((value !== 0 && !isNaN(value)) && (unit !== '0' && !isNaN(unit))) {
             selectedoption.options[0].setAttribute('disabled', 'true');
             unit = parseFloat(section.querySelector('.time-select').options[unit].value);
-            value = parseFloat(section.querySelector('.section-time').innerHTML);
             set_section_time_call(section, unit, value);
-            let timetype = document.querySelector('input[name="timetype"]')
-            display_quiz_time(timetype.value);
         }
-    }
+    };
 
     /**
      * Gets a question time from the page inputs.
      *
-     * @param {event} question.
+     * @param {event} question
      * @returns JSON string containing the question time.
      */
         const get_question_time = function(question) {
-            unit = question.querySelector('.time-select').value
-            timevalue = question.querySelector('.question-time').innerHTML
+            let unit = question.querySelector('.time-select').value;
+            let timevalue = question.querySelector('.question-time').innerHTML;
             timevalue = get_time_in_seconds(parseFloat(unit), parseFloat(timevalue));
             return {'unit' : unit, 'value' : timevalue};
-        }
+        };
 
     /**
      * Gets a section time from the slots time.
@@ -181,10 +170,10 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, aja
      * @returns JSON string containing the secton time.
      */
     const get_section_time_from_slots = function(section) {
-        unit = section.querySelector('.time-select').value
-        timevalue = section.querySelector('.section-time').innerHTML
-        return { 'unit' : unit ,'value' : timevalue}
-    }
+        let unit = section.querySelector('.time-select').value;
+        let timevalue = section.querySelector('.section-time').innerHTML;
+        return { 'unit' : unit ,'value' : timevalue};
+    };
 
     /**
      * Gets the id of a section.
@@ -193,10 +182,10 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, aja
      * @returns JSON string with the section id
      */
     const get_section_id = function(section) {
-        id = section.id
-        sectionid = id.substring(id.indexOf('-') + 1);
-        return { 'sectionid':sectionid}
-    }
+        let id = section.id;
+        let sectionid = id.substring(id.indexOf('-') + 1);
+        return { 'sectionid':sectionid};
+    };
     /**
      * Gets the id of a question
      *
@@ -204,10 +193,10 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, aja
      * @returns JSON string containing the numeric part of the question id.
      */
     const get_question_id = function(question) {
-        id = question.id
-        slotid = id.substring(id.indexOf('-') + 1);
-        return { 'questionid':slotid}
-    }
+        let id = question.id;
+        let slotid = id.substring(id.indexOf('-') + 1);
+        return { 'questionid':slotid};
+    };
 
     /**
      * When the edit question event is triggered,
@@ -219,9 +208,9 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, aja
      * @param {event} e
      */
     const edit_question_time = function(e) {
-        time = e.currentTarget.closest('.time')
-        timevalue = time.querySelector('.question-time')
-        timeid = timevalue.getAttribute('id') + '-edit';
+        let time = e.currentTarget.closest('.time');
+        let timevalue = time.querySelector('.question-time');
+        let timeid = timevalue.getAttribute('id') + '-edit';
         $('<input></input>')
             .attr({
                 'type': 'text',
@@ -231,15 +220,15 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, aja
                 'value': timevalue.innerHTML
             })
             .prependTo(time);
-        timevalue.setAttribute('style', 'display:none')
+        timevalue.setAttribute('style', 'display:none');
         $('#' + timeid).focus();
-        $('#' + timeid).on('keydown', this, questiontime)
+        $('#' + timeid).on('keydown', this, questiontime);
         $('#' + timeid).on('blur', this, function() {
-            this.closest('.time').querySelector('.question-time').removeAttribute('style')
+            this.closest('.time').querySelector('.question-time').removeAttribute('style');
             this.remove();
-        })
+        });
+    };
 
-    }
     /**
      * When the edit section event is triggered,
      * creates a input for editing the time, and hides
@@ -250,9 +239,9 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, aja
      * @param {event} e
      */
     const edit_section_time = function(e) {
-        time = e.currentTarget.closest('.time')
-        timevalue = time.querySelector('.section-time')
-        timeid = timevalue.getAttribute('id') + '-edit'
+        let time = e.currentTarget.closest('.time');
+        let timevalue = time.querySelector('.section-time');
+        let timeid = timevalue.getAttribute('id') + '-edit';
         $('<input></input>')
             .attr({
                 'type': 'text',
@@ -262,15 +251,14 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, aja
                 'value': timevalue.innerHTML,
             })
             .prependTo(time);
-        timevalue.setAttribute('style', 'display:none')
+        timevalue.setAttribute('style', 'display:none');
         $('#' + timeid).focus();
-        $('#' + timeid).on('keydown', this, sectiontime)
+        $('#' + timeid).on('keydown', this, sectiontime);
         $('#' + timeid).on('blur', this, function() {
-            this.closest('.section-heading').querySelector('.section-time').removeAttribute('style')
+            this.closest('.section-heading').querySelector('.section-time').removeAttribute('style');
             this.remove();
-
-        })
-    }
+        });
+    };
 
     /**
      * Triggered at changing the edit format used,
@@ -280,25 +268,24 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, aja
      * @param {event} e
      */
     const change_time_edit_method = function(e) {
-        editmethod = e.currentTarget.value;
+        let editmethod = e.currentTarget.value;
         let url = location.href;
         let k = url.search('&edittype=');
         if (k != -1) {
             let param = url.substring(k);
-            let editmethod2 = param.split('=')[1]
+            let editmethod2 = param.split('=')[1];
             url = url.replace(editmethod2, editmethod);
         } else {
             url += '&edittype=' + editmethod;
         }
         url = url.replace('#', '');
-        get_quiz_id(cmid).then( response => {
-            quizid = JSON.parse(response).quizid;
-            repaginate_slots(quizid,editmethod).then(r => {
+        get_quiz_id(cmid).then(response => {
+            let quizid = JSON.parse(response).quizid;
+            repaginate_slots(quizid,editmethod).done( () => {
                 window.location.href = url;
             });
         });
-
-    }
+    };
 
     /**
      * Loads a section time based on the questions times
@@ -308,9 +295,9 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, aja
      *
      */
     const load_section_time = (section) => {
-        questions = section.querySelectorAll('.slot')
-        totaltime = get_total_time_of_questions(questions);
-        sectiontimeunit = parseFloat(section.querySelector('.time-select').value);
+        let questions = section.querySelectorAll('.slot');
+        let totaltime = get_total_time_of_questions(questions);
+        let sectiontimeunit = parseFloat(section.querySelector('.time-select').value);
         totaltime = (get_time_in_unit(sectiontimeunit, totaltime));
         section.querySelector('.total-section-time').innerHTML = totaltime;
         if (parseFloat(section.querySelector('.time-select').value) === 0) {
@@ -318,7 +305,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, aja
         }
         sectiontimeunit = section.querySelector('.time-select').options[sectiontimeunit].innerHTML;
         section.querySelector('.total-section-unit').innerHTML = sectiontimeunit;
-    }
+    };
 
     const repaginate_slots = (quizid, editmethod) => ajax.call([{
         methodname: 'quizaccess_quiztimer_repaginate_slots',
@@ -329,6 +316,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, aja
     }])[0].done( response => {
         return response;
     }).fail( err => {
+        // eslint-disable-next-line no-console
         console.log(err);
     });
 
@@ -341,17 +329,20 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, aja
      * @param {int} value
      */
     const set_section_time_call = (section, unit, value) => {
-        questions = section.querySelectorAll('.slot');
         value = get_time_in_seconds(unit, value);
-        timedata = {'unit' : unit, 'value' : value};
+        let timedata = {'unit' : unit, 'value' : value};
             get_quiz_id(cmid).then( response => {
-                quizid = JSON.parse(response).quizid;
+                let quizid = JSON.parse(response).quizid;
                 let sectionid = get_section_id(section).sectionid;
-                set_section_time(quizid, sectionid, timedata).then(response => {
+                set_section_time(quizid, sectionid, timedata).then( () => {
                     get_section_time_call(section);
-                })
+                    let timetype = document.querySelector('input[name="timetype"]');
+                    if (timetype.value == 'equitative') {
+                        get_page_time_from_section(section);
+                    }
+                });
         });
-    }
+    };
 
     /**
      * Gets a section time from the db
@@ -366,21 +357,20 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, aja
             let quizid = JSON.parse(response).quizid;
             let sectionid = get_section_id(section).sectionid;
             get_section_time(quizid, sectionid).then(response => {
-                timedata = JSON.parse(response);
-                console.log('time', timedata, section);
+                let timedata = JSON.parse(response);
                 if(!timedata) {
                 section.querySelector('.time-select').value = 2;
                 section.querySelector('.total-section-time').innerHTML = '';
                 section.querySelector('.total-section-unit').innerHTML = '';
                 section.querySelector('.section-time').innerHTML = 0;
                 }
-                unit = timedata.timeunit;
-                value = get_time_in_unit(parseFloat(unit), parseFloat(timedata.timevalue));
+                let unit = timedata.timeunit;
+                let value = get_time_in_unit(parseFloat(unit), parseFloat(timedata.timevalue));
                 if (value === 0) {
                     section.querySelector('.time-select').value = 2;
                     if (!section.querySelector('.warningtime')) {
                         let warningtime = document.createElement('span');
-                        warningtime.setAttribute('class', 'text-danger warningtime')
+                        warningtime.setAttribute('class', 'text-danger warningtime');
                         warningtime.append(warningtimestr);
                         section.querySelector('.section-heading').appendChild(warningtime);
                     }
@@ -393,9 +383,11 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, aja
                 section.querySelector('.total-section-time').innerHTML = value;
                 section.querySelector('.total-section-unit').innerHTML = section.querySelector('.time-select').options[unit].text;
                 section.querySelector('.section-time').innerHTML = value;
+                display_quiz_time('section');
+                quiz_has_attemps();
             });
         });
-    }
+    };
 
     /**
      * Gets the total amount of time of the selected questions
@@ -405,15 +397,15 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, aja
      * @returns int total questions time in seconds.
      */
     const get_total_time_of_questions = (questions) => {
-        totaltime = 0;
+        let totaltime = 0;
         for(let t = 0; t < questions.length; t ++) {
-            timeunit = parseInt(questions[t].querySelector('.time-select').value);
-            time = parseFloat(questions[t].querySelector('.question-time').innerHTML);
-            timeinseconds = get_time_in_seconds(timeunit, time);
+            let timeunit = parseInt(questions[t].querySelector('.time-select').value);
+            let time = parseFloat(questions[t].querySelector('.question-time').innerHTML);
+            let timeinseconds = get_time_in_seconds(timeunit, time);
             totaltime += timeinseconds;
         }
         return totaltime;
-    }
+    };
 
 
     /**
@@ -424,20 +416,20 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, aja
      */
     const load_page_time = (page) => {
 
-        if (pagetime = page.querySelector('.pagetime')) {
+        if (page.querySelector('.pagetime')) {
+            let pagetime = page.querySelector('.pagetime');
             let time = pagetime.querySelector('.total-page-time');
             let unit = pagetime.querySelector('.total-page-unit');
-            id = page.getAttribute('id');
-            let question = $(page).nextUntil('.pagenumber.activity.timed')
-            totaltime = get_total_time_of_questions(question);
-            pagetimeunit = parseFloat(question[0].querySelector('.time-select').value);
+            let question = $(page).nextUntil('.pagenumber.activity.timed');
+            let totaltime = get_total_time_of_questions(question);
+            let pagetimeunit = parseFloat(question[0].querySelector('.time-select').value);
             totaltime = (get_time_in_unit(pagetimeunit, totaltime));
             time.innerHTML = totaltime;
             unit.innerHTML = question[0].querySelector('.time-select').options[pagetimeunit].innerHTML;
         } else {
             create_timed_page_elements(page);
         }
-    }
+    };
 
     /**
      * Generates all the html elements to edit a page time[TODO],
@@ -447,34 +439,33 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, aja
      * @param {htmlElement} page
      */
     const create_timed_page_elements = (page) => {
-        id = page.getAttribute('id');
-        let question = $('#' + id).nextUntil('.pagenumber.activity.timed')
-        totaltime = get_total_time_of_questions(question);
-        pagetimeunit = parseFloat(question[0].querySelector('.time-select').value);
+        let id = page.getAttribute('id');
+        let question = $('#' + id).nextUntil('.pagenumber.activity.timed');
+        let totaltime = get_total_time_of_questions(question);
+        let pagetimeunit = parseFloat(question[0].querySelector('.time-select').value);
         totaltime = (get_time_in_unit(pagetimeunit, totaltime));
-        let pagetime = document.createElement('span')
-        pagetime.setAttribute('class', 'pagetime')
+        let pagetime = document.createElement('span');
+        pagetime.setAttribute('class', 'pagetime');
         page.append(pagetime);
 
-        let pagevalue = document.createElement('span')
-        pagevalue.setAttribute('class', 'total-page-time')
-        pagevalue.innerHTML = totaltime
-        pagetime.append(pagevalue)
+        let pagevalue = document.createElement('span');
+        pagevalue.setAttribute('class', 'total-page-time');
+        pagevalue.innerHTML = totaltime;
+        pagetime.append(pagevalue);
 
-        let pageunit = document.createElement('span')
-        pageunit.setAttribute('class', 'total-page-unit')
-        pageunit.innerHTML = question[0].querySelector('.time-select').options[pagetimeunit].innerHTML;
+        let pageunit = document.createElement('span');
+        pageunit.setAttribute('class', 'total-page-unit');
         pagetime.append(' ');
         pagetime.append(pageunit);
-    }
+    };
 
     /**
      * Loads tbe page time
      *
      * @param {htmlElement} page
      */
-    var pageloadedsections = [];
     const get_page_time_from_section = (page) => {
+        var pageloadedsections = [];
         let section = page.closest('.section.main.clearfix');
         if (!pageloadedsections.includes(section.id)) {
             pageloadedsections.push(section.id);
@@ -483,20 +474,18 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, aja
             get_quiz_id(cmid).then( response => {
                 let quizid = JSON.parse(response).quizid;
                 get_section_time(quizid, sectionid).then( response => {
-                        let totalsectime = JSON.parse(response).timevalue;
-                        let pagetime = totalsectime / sectionpages.length;
-                        $.when(unitsstrings).done( unitsstrings => {
-                            pagetime = format_pagetime(pagetime, unitsstrings[0], unitsstrings[1], unitsstrings[2]);
-                            for (let t = 0; t < sectionpages.length; t ++) {
-                                sectionpages[t].querySelector('.total-page-time').innerHTML = pagetime;
-                            }
-                        });
+                    let totalsectime = JSON.parse(response).timevalue;
+                    let pagetime = totalsectime / sectionpages.length;
+                    $.when(unitsstrings).done( unitsstrings => {
+                        pagetime = format_pagetime(pagetime, unitsstrings[0], unitsstrings[1], unitsstrings[2]);
+                        for (let t = 0; t < sectionpages.length; t ++) {
+                            sectionpages[t].querySelector('.total-page-time').innerHTML = pagetime;
+                        }
+                    });
                 });
             });
-
         }
-
-    }
+    };
 
     /**
      * Formats the time in seconds, and gets a
@@ -509,10 +498,11 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, aja
      * @returns {string} formatted time
      */
     const format_pagetime = (time, seconds, minutes, hours) => {
+        let pagetime = '';
         if (time / 3600 >= 1) {
             let h = Math.floor(time / 3600);
             if (time % 3600 !== 0) {
-                if (time % 3600 > 60) {
+                if (time % 3600 >= 60) {
                     if ((time % 3600) % 60 !== 0 ) {
                         let m = Math.floor((time % 3600) / 60);
                         let s = (time % 3600) % 60;
@@ -542,7 +532,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, aja
             pagetime = +time.toFixed(2) + ' ' + seconds;
             return pagetime;
         }
-    }
+    };
 
     /**
      * Gets the time to set in seconds for the insert
@@ -553,6 +543,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, aja
      * @returns the time to insert in the database.
      */
     const get_time_in_seconds = (timeunit, time) => {
+        let timeinseconds = 0;
         switch (timeunit) {
             case 1:
                 timeinseconds = time;
@@ -562,14 +553,14 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, aja
                 break;
             case 3:
                 timeinseconds = time * 3600;
-                break
+                break;
             default:
                 timeinseconds = 0;
                 break;
 
         }
         return timeinseconds;
-    }
+    };
 
     /**
      * Gets the time in the unit requested
@@ -580,6 +571,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, aja
      * @returns the time in the selected unit.
      */
     const get_time_in_unit = (timeunit, time) => {
+        let sectiontimeinunit = 0;
         switch (timeunit) {
             case 1:
                 sectiontimeinunit = time;
@@ -589,14 +581,14 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, aja
                 break;
             case 3:
                 sectiontimeinunit = time / 3600;
-                break
+                break;
             default:
                 sectiontimeinunit = 0;
                 break;
 
         }
         return parseFloat(sectiontimeinunit.toFixed(2));
-    }
+    };
 
     /**
      * Displays and updates the total quiz time.
@@ -607,16 +599,18 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, aja
         let quiztimer = document.querySelector('.quiztimer-time');
         $.when(unitsstrings).done( unitsstrings => {
             get_quiz_id(cmid).then( response => {
-                quizid = JSON.parse(response).quizid;
+                let quizid = JSON.parse(response).quizid;
                 get_quiz_time(quizid, timetype).then( r => {
                     let time = format_pagetime(JSON.parse(r).time,unitsstrings[0], unitsstrings[1], unitsstrings[2]);
-                    quiztimer.innerHTML == '' ? quiztimer.append(' | ' + time) :
-                    quiztimer.innerHTML = ' | ' + time;
+                    if (quiztimer.innerHTML == '') {
+                        quiztimer.append(' | ' + time);
+                    } else {
+                        quiztimer.innerHTML = ' | ' + time;
+                    }
                 });
             });
         });
-
-    }
+    };
 
     /**
      * Returns the quiz time.
@@ -634,6 +628,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, aja
     }])[0].done( response => {
         return response;
     }).fail( err => {
+        // eslint-disable-next-line no-console
         console.log(err);
     });
 
@@ -656,6 +651,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, aja
     }])[0].done( response => {
         return response;
     }).fail( err => {
+        // eslint-disable-next-line no-console
         console.log(err);
     });
 
@@ -676,6 +672,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, aja
     }])[0].done( response => {
         return response;
     }).fail( err => {
+        // eslint-disable-next-line no-console
         console.log(err);
     });
 
@@ -687,27 +684,27 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, aja
      * @param {htmlElement} slot
      * @returns JSON string with the modified slot info.
      */
-    const set_question_time_call = (slot) => {
-        timedata = get_question_time(slot.closest('.slot'));
-            if (timedata.unit != 0) {
-                question = slot.closest('[id^="slot"]');
-                questionid = get_question_id(question);
-                if (timedata.value != 0) {
-                    if (question.querySelector('.warningtime')) {
-                        question.querySelector('.activityinstance').removeChild(question.querySelector('.warningtime'));
-                    }
+    const set_question_time_call = async(slot) => {
+        let timedata = get_question_time(slot.closest('.slot'));
+        if (timedata.unit != 0) {
+            let question = slot.closest('[id^="slot"]');
+            let questionid = get_question_id(question);
+            if (timedata.value != 0) {
+                if (question.querySelector('.warningtime')) {
+                    question.querySelector('.activityinstance').removeChild(question.querySelector('.warningtime'));
                 }
-                get_quiz_id(cmid).then( response => {
-                    quizid = JSON.parse(response);
-                    set_question_time(quizid.quizid, questionid.questionid, timedata).then(response => {
-                        page = get_page_from_slotid(JSON.parse(response).slot);
-                        load_page_time(page);
-                        load_section_time(question.closest('.section.main.clearfix'));
-                    })
-                });
-
             }
-    }
+            get_quiz_id(cmid).then( response => {
+                let quizid = JSON.parse(response);
+                set_question_time(quizid.quizid, questionid.questionid, timedata).then(response => {
+                    let page = get_page_from_slotid(JSON.parse(response).slot);
+                    load_page_time(page);
+                    load_section_time(question.closest('.section.main.clearfix'));
+                    display_quiz_time('slots');
+                });
+            });
+        }
+    };
     /**
      *
      * @param {int} quizid
@@ -725,6 +722,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, aja
     }])[0].done( response => {
         return response;
     }).fail( err => {
+        // eslint-disable-next-line no-console
         console.log(err);
     });
 
@@ -741,13 +739,13 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, aja
     }])[0].done(function(response) {
         return response;
     }).fail(function(err) {
+        // eslint-disable-next-line no-console
         console.log(err);
     });
 
     /**
      *
      * @param {int} questionid
-     * @param {array} timedata
      * @returns
      */
     const load_question_time = (questionid) => ajax.call([{
@@ -758,6 +756,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, aja
     }])[0].done( response => {
         return response;
     }).fail( err => {
+        // eslint-disable-next-line no-console
         console.log(err);
     });
 
@@ -767,17 +766,32 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, aja
      * @returns the page the slot belongs to.
      */
     const get_page_from_slotid = (slot) => {
-        slotid = 'slot-' + slot;
-        page = ($('#' + slotid).prev('.pagenumber.timed')[0]);
+        let slotid = 'slot-' + slot;
+        let page = ($('#' + slotid).prev('.pagenumber.timed')[0]);
         return(page);
-    }
+    };
+
+    const quiz_has_attemps = () => {
+        let quizhasattemps = document.querySelector('.statusdisplay');
+        if (quizhasattemps !== null) {
+            let mainquizslots = document.querySelector('.slots');
+            let selectors = mainquizslots.querySelectorAll('select');
+            let pencils = mainquizslots.querySelectorAll('.fa-pencil');
+            selectors.forEach(selector => {
+                selector.setAttribute('disabled', true);
+            });
+            pencils.forEach(pencil => {
+                pencil.setAttribute('style', 'display:none;');
+            });
+        }
+    };
 
     return {
         init: async function(timetype = 'section') {
             const warningtimestr = await str.get_string('warningtime', 'quizaccess_quiztimer');
+            const noquestions = await str.get_string('noquestions', 'mod_quiz');
             $(document).ready(function() {
-                navitem = $('.activity-header')[0];
-
+                let navitem = $('.activity-header')[0];
                 $.when(selectstrings).done( selectstrings => {
                     let select = document.createElement('select');
                     select.setAttribute('class', 'custom-select urlselect timeselect');
@@ -786,6 +800,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, aja
                     select.add(new Option(selectstrings[1], 'slots'));
                     select.add(new Option(selectstrings[2], 'equitative'));
                     navitem.append(select);
+                    let selectedoption = 0;
                     if (select.options[0].value == timetype) {
                         selectedoption = 0;
                     } else if (select.options[1].value == timetype) {
@@ -795,7 +810,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, aja
                     }
                     select.options[selectedoption].setAttribute('selected', 'true');
                     select.addEventListener('change', change_time_edit_method, true);
-                })
+                });
                 let quiztime = document.createElement('span');
                 quiztime.setAttribute('class', 'quiztimer-time');
                 let slotheader = document.querySelector('.mod-quiz-edit-content').querySelector('h2');
@@ -807,45 +822,46 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, aja
                 secrettimetype.setAttribute("value", timetype);
                 slotheader.append(secrettimetype);
 
-                questions = $('.slot');
+                let questions = $('.slot');
                 if (questions.length === 0) {
-                    section = $('.section.main.clearfix')[0];
+                    let section = $('.section.main.clearfix')[0];
                     section.setAttribute('style', 'display:none');
                     notification.addNotification({
-                       message: "No se encontraron preguntas, comprueba que se han añadido correctamente al quiz.",
+                       message: noquestions,
                        type: "error"
                     });
-                    $('.slots')[0].append('Preguntas:0 | Este cuestionario está vacio');
                     return;
                 }
-                pagesar = [];
+                let pagesar = [];
                 for (let x = 0; x < questions.length; x ++) {
                     let question = questions[x];
-                    let select = question.querySelector('.time-select')
+                    let select = question.querySelector('.time-select');
 
                     select.addEventListener('change', adjust_question_time_display, true);
 
-                    editpen = question.querySelector('.editing-question-time')
-                    editpen.addEventListener('click', edit_question_time, true)
+                    let editpen = question.querySelector('.editing-question-time');
+                    editpen.addEventListener('click', edit_question_time, true);
 
-                    questionid = get_question_id(question);
+                    let questionid = get_question_id(question);
                     let timeinput = question.querySelector('.question-time');
-                    load_question_time(questionid.questionid).then(function (response) {
+                    load_question_time(questionid.questionid).then( (response) => {
                         if (timetype === 'section') {
                             question.querySelector('.time').setAttribute('style', 'display:none');
                             select.setAttribute('style', 'display:none');
                         } else if (timetype === 'slots') {
-                            if (timedata = JSON.parse(response) || JSON.parse(response).timevalue == 0) {
+                            if (JSON.parse(response) || JSON.parse(response).timevalue == 0) {
+                                let timedata = JSON.parse(response);
                                 select.value = timedata.timeunit;
-                                timeinput.innerHTML = get_time_in_unit(parseFloat(timedata.timeunit), parseFloat(timedata.timevalue));
+                                timeinput.innerHTML = get_time_in_unit(parseFloat(timedata.timeunit),
+                                    parseFloat(timedata.timevalue));
                                 if ((!question.querySelector('.warningtime') && timedata.timevalue == 0)) {
                                     let warningtime = document.createElement('span');
-                                    warningtime.setAttribute('class', 'text-danger warningtime')
+                                    warningtime.setAttribute('class', 'text-danger warningtime');
                                     warningtime.append(warningtimestr);
                                     question.querySelector('.activityinstance').appendChild(warningtime);
                                 }
-                            }  
-                            pages = $('.pagenumber.activity.timed')
+                            }
+                            let pages = $('.pagenumber.activity.timed');
                             for (let t = 0; t < pages.length; t ++) {
                                 let page = pages[t];
                                 if (!pagesar.includes(page.id)) {
@@ -858,12 +874,14 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, aja
                             section.querySelector('.time-select').setAttribute('style', 'display:none');
                             section.querySelector('.time').setAttribute('style', 'display:none');
                             load_section_time(section);
-                            section.querySelector('.section-time').innerHTML = section.querySelector('.total-section-time').innerHTML
+                            section.querySelector('.section-time').innerHTML =
+                                section.querySelector('.total-section-time').innerHTML;
+                            display_quiz_time('slots');
+                            quiz_has_attemps();
                         } else if (timetype === 'equitative') {
-
                             question.querySelector('.time').setAttribute('style', 'display:none');
                             select.setAttribute('style', 'display:none');
-                            pages = $('.pagenumber.activity.timed')
+                            let pages = $('.pagenumber.activity.timed');
                             for (let t = 0; t < pages.length; t ++) {
                                 let page = pages[t];
                                 if (!pagesar.includes(page.id)) {
@@ -877,16 +895,16 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, aja
                     });
 
                 }
-                sections = $('.section.main.clearfix');
+                let sections = $('.section.main.clearfix');
                 for (let x = 0; x < sections.length; x ++) {
                     let section = sections[x];
-                    select = section.querySelector('.time-select')
+                    let select = section.querySelector('.time-select');
                     select.addEventListener('change', adjust_section_time_display, true);
 
-                    editpen = section.querySelector('.editing-section-time')
-                    editpen.addEventListener('click', edit_section_time, true)
+                    let editpen = section.querySelector('.editing-section-time');
+                    editpen.addEventListener('click', edit_section_time, true);
                     if (timetype !== 'slots') {
-                        get_section_time_call(section.closest('.section.main.clearfix'));
+                        get_section_time_call(section.closest('.section.main.clearfix')).then();
                     }
                 }
             });

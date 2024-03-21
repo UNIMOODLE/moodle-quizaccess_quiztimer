@@ -24,7 +24,7 @@
 /**
  * Version details
  *
- * @package    local_quiztimer
+ * @package    quizaccess_quiztimer
  * @copyright  2023 Proyecto UNIMOODLE
  * @author     UNIMOODLE Group (Coordinator) <direccion.area.estrategia.digital@uva.es>
  * @author     ISYC <soporte@isyc.com>
@@ -43,5 +43,9 @@ $observers = [
     [
         'eventname'   => '\mod_quiz\event\section_break_deleted',
         'callback'    => 'quizaccess_quiztimer_observer::section_break_deleted',
+    ],
+    [
+        'eventname'   => '\mod_quiz\event\slot_created',
+        'callback'    => 'quizaccess_quiztimer_observer::slot_created',
     ],
 ];

@@ -24,7 +24,7 @@
 /**
  * Version details
  *
- * @package    local_quiztimer
+ * @package    quizaccess_quiztimer
  * @copyright  2023 Proyecto UNIMOODLE
  * @author     UNIMOODLE Group (Coordinator) <direccion.area.estrategia.digital@uva.es>
  * @author     ISYC <soporte@isyc.com>
@@ -48,7 +48,6 @@ $string['submit'] = 'Submit';
 $string['quiztime'] = 'Adjust questions times';
 $string['timeunit'] = '...';
 $string['totalsectiontime'] = 'Total section time:';
-$string['pagetime'] = 'Total time:';
 $string['hours'] = 'hours';
 $string['minutes'] = 'minutes';
 $string['seconds'] = 'seconds';
@@ -59,9 +58,9 @@ $string['pagetime'] = 'Time for page';
 $string['questiontime'] = 'Time for question';
 
 $string['setting:timedsections'] = 'Section default time';
-$string['setting:timedsections_desc'] = 'Section default time desc';
+$string['setting:timedsections_desc'] = 'The defualt time assigned to the created sections';
 $string['setting:timedslots'] = 'Slot default time';
-$string['setting:timedslots_desc'] = 'Slot default time desc';
+$string['setting:timedslots_desc'] = 'The defualt time assigned to the created slots';
 $string['unitsections'] = 'Sections unit used';
 $string['unitslots'] = 'Slots unit used';
 
@@ -71,3 +70,11 @@ $string['quizquiztimer'] = 'Quiz timer';
 $string['quiztimererrors'] = 'Quiz setted timers that need attention to allow the quiz execution:';
 $string['warningtime'] = 'Invalid time setted';
 $string['invalidsettedtime'] = 'Tiempo introducido invalido, se ha restablecido al valor anterior';
+
+$string['canteditquiztimes'] = 'You cannot edit questions times because this quiz has been attempted. ({$a})';
+$string['eventslottimerupdated'] = 'Slot timer updated';
+$string['eventsectiontimerupdated'] = 'Section timer updated';
+$string['quiztimer:manage'] = 'Manage quiztimer time settings';
+
+$string['eventslottimerupdateddescription'] = 'User with id {$a->userid} updated slot timer with id {$a->slot} with a new time of {$a->timevalue} {$a->timeunit}';
+$string['eventsectiontimerupdateddescription'] = 'User with id {$a->userid} updated section timer with id {$a->section} with a new time of {$a->timevalue} {$a->timeunit}';

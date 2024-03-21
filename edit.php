@@ -47,6 +47,8 @@ $scrollpos = optional_param('scrollpos', '', PARAM_INT);
 list($thispageurl, $contexts, $cmid, $cm, $quiz, $pagevars) =
         question_edit_setup('editq', '/mod/quiz/edit.php', true);
 
+require_capability('quizaccess/quiztimer:manage', context_module::instance($PAGE->cm->id), $USER->id, true,
+    $errormessage = 'nopermissions', $stringfile = '');
 $defaultcategoryobj = question_make_default_categories($contexts->all());
 $defaultcategory = $defaultcategoryobj->id . ',' . $defaultcategoryobj->contextid;
 
@@ -105,7 +107,6 @@ $output = $PAGE->get_renderer('quizaccess_quiztimer', 'edit' );
 $PAGE->set_title(get_string('editingquizx', 'quiz', format_string($quiz->name)));
 $PAGE->set_heading($course->fullname);
 $PAGE->activityheader->disable();
-$node = $PAGE->settingsnav->find('mod_quiz_edit', navigation_node::TYPE_SETTING);
 $PAGE->navbar->add(get_string('quiztime', 'quizaccess_quiztimer' ));
 echo $OUTPUT->header();
 

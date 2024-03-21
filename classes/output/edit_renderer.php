@@ -24,7 +24,7 @@
 /**
  * Version details
  *
- * @package    local_quiztimer
+ * @package    quizaccess_quiztimer
  * @copyright  2023 Proyecto UNIMOODLE
  * @author     UNIMOODLE Group (Coordinator) <direccion.area.estrategia.digital@uva.es>
  * @author     ISYC <soporte@isyc.com>
@@ -40,10 +40,6 @@ use renderable;
 
 /**
  * Renderer outputting the quiz editing UI.
- *
- * @copyright 2013 The Open University.
- * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @since Moodle 2.7
  */
 class edit_renderer extends \plugin_renderer_base {
 
@@ -66,6 +62,9 @@ class edit_renderer extends \plugin_renderer_base {
 
         // Page title.
         $output .= $this->heading(get_string('questions', 'quiz'));
+        // Top information.
+        $output .= $this->quiz_state_warnings($quizobj);
+        $output .= $this->quiz_information($structure);
         // Show the questions organised into sections and pages.
         $output .= $this->start_section_list($structure);
 
@@ -80,16 +79,15 @@ class edit_renderer extends \plugin_renderer_base {
         return $output;
     }
 
+
     /**
-     * Render any warnings that might be required about the state of the quiz,
-     * e.g. if it has been attempted, or if the shuffle questions option is
-     * turned on.
+     * Generate the function comment for the given function body in a markdown code block with the correct language syntax.
      *
-     * @param structure $structure the quiz structure.
-     * @return string HTML to output.
+     * @param datatype $quizobj description
+     * @return Some_Return_Value
      */
-    public function quiz_state_warnings(structure $structure) {
-        $warnings = $structure->get_edit_page_warnings();
+    public function quiz_state_warnings($quizobj) {
+        $warnings = $this->get_edittimes_page_warnings($quizobj);
 
         if (empty($warnings)) {
             return '';
@@ -440,40 +438,22 @@ class edit_renderer extends \plugin_renderer_base {
         return $output;
     }
 
+
     /**
-     * HTML for a page, with ids stripped, so it can be used as a javascript template.
+     * Generate the function comment for the given function body in a markdown code block with the correct language syntax.
      *
-     * @param structure $structure object containing the structure of the quiz.
-     * @param \core_question\local\bank\question_edit_contexts $contexts the relevant question bank contexts.
-     * @param array $pagevars the variables from {@see \question_edit_setup()}.
-     * @param \moodle_url $pageurl the canonical URL of this page.
-     * @return string HTML for a new page.
+     * @param datatype $quizobj description
+     * @return array
      */
-    protected function new_page_template(structure $structure,
-            \core_question\local\bank\question_edit_contexts $contexts, array $pagevars, \moodle_url $pageurl) {
-        if (!$structure->has_questions()) {
-            return '';
+    public function get_edittimes_page_warnings($quizobj) {
+        $warnings = [];
+
+        if (quiz_has_attempts($quizobj->get_quizid())) {
+            $reviewlink = $this->page->get_renderer('mod_quiz')->quiz_attempt_summary_link_to_reports($quizobj->get_quiz(),
+                    $quizobj->get_cm(), $quizobj->get_context());
+            $warnings[] = get_string('canteditquiztimes', 'quizaccess_quiztimer', $reviewlink);
         }
-
-        $pagehtml = $this->page_row($structure, 1, $contexts, $pagevars, $pageurl);
-
-        // Normalise the page number.
-        $pagenumber = $structure->get_page_number_for_slot(1);
-        $strcontexts = [];
-        $strcontexts[] = 'page-';
-        $strcontexts[] = get_string('page') . ' ';
-        $strcontexts[] = 'addonpage%3D';
-        $strcontexts[] = 'addonpage=';
-        $strcontexts[] = 'addonpage="';
-        $strcontexts[] = get_string('addquestionfrombanktopage', 'quiz', '');
-        $strcontexts[] = 'data-addonpage%3D';
-        $strcontexts[] = 'action-menu-';
-
-        foreach ($strcontexts as $strcontext) {
-            $pagehtml = str_replace($strcontext . $pagenumber, $strcontext . '%%PAGENUMBER%%', $pagehtml);
-        }
-
-        return $pagehtml;
+        return $warnings;
     }
 
 }
