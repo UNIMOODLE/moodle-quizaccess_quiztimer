@@ -52,7 +52,7 @@ class quiz_options {
         if (!$option) {
             $quiztimercfg = new \stdClass();
             $quiztimercfg->quiz = $quizid;
-            $quiztimercfg->quiz_mode = 2;
+            $quiztimercfg->quiz_mode = 1;
             $quiztimercfg->usermodified = $USER->id;
             $quiztimercfg->timecreated = time();
             $DB->insert_record('quizaccess_quiztimer', $quiztimercfg);
