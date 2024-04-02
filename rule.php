@@ -110,7 +110,7 @@ class quizaccess_quiztimer extends quiz_access_rule_base {
                         </script>'
                     );
                 } else if ($quiz->quiz_mode == 4) {
-                    $mform->setDefault('timequestion', 'question');
+                    $mform->setDefault('timequestion', 'page');
                     $mform->addElement(
                         'html',
                         '<script type="text/javascript">
