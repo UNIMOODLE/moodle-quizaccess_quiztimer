@@ -411,29 +411,28 @@ class quizaccess_quiztimer_external extends external_api {
             self::repaginate_slots_parameters(),
                 ["quizid" => $quizid, "editmethod" => $editmethod]
         );
-        $e = null;
+        $timetype = null;
         switch ($editmethod) {
             case 'section':
-                $e = 0;
+                $timetype = 0;
                 $quizoption = 2;
                 break;
             case 'slots':
-                $e = 1;
+                $timetype = 1;
                 $quizoption = 3;
                 break;
             case 'equitative':
                 $quizoption = 4;
                 break;
             default:
-                $e = null;
-                $quizoption = 2;
+                $quizoption = 1;
                 break;
         }
         $DB->set_field('quizaccess_quiztimer', 'quiz_mode', $quizoption, ['quiz' => $quizid]);
-        if ($e !== null) {
-            quiz_repaginate_questions($quizid, $e);
+        if ($timetype !== null) {
+            quiz_repaginate_questions($quizid, $timetype);
         }
-        return json_encode($e);
+        return json_encode($timetype);
     }
 
     /**
@@ -468,9 +467,12 @@ class quizaccess_quiztimer_external extends external_api {
             self::get_quiz_time_parameters(),
                 ["quizid" => $quizid, "editmethod" => $editmethod]
         );
+        if ($editmethod == 'timelimit') {
+            return 0;
+        }
         $param = ['quizid' => $quizid];
-        $e = new stdClass();
-        $e->time = 0;
+        $quiztime = new stdClass();
+        $quiztime->time = 0;
         if ($editmethod != 'slots') {
             $sql = "SELECT sectionid, timeunit, timevalue FROM {quizaccess_timedsections} WHERE quizid = :quizid";
             $sections = $DB->get_records_sql($sql, $param);
@@ -481,7 +483,7 @@ class quizaccess_quiztimer_external extends external_api {
             }
             foreach ($sections as $id => $timevalue) {
                 if (in_array($id, $activeids, true)) {
-                    $e->time += $timevalue->timevalue;
+                    $quiztime->time += $timevalue->timevalue;
                 }
             }
         } else {
@@ -491,11 +493,11 @@ class quizaccess_quiztimer_external extends external_api {
                 $activeids[] = (int)$activeslot->id;
             }
             foreach ($slots as $slot) {
-                    $e->time += $slot->timevalue;
+                $quiztime->time += $slot->timevalue;
             }
         }
 
-        return json_encode($e);
+        return json_encode($quiztime);
     }
 
     /**

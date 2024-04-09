@@ -5,11 +5,11 @@ define(function(require, exports, module) {
         var attemptid = data.attemptid;
         var tiempos = data.tiempos;
 
-        var backgroundColors = ["#ca3120", "#d73422", "#dd3d2b", "#e04938",
+        const backgroundColors = ["#ca3120", "#d73422", "#dd3d2b", "#e04938",
             "#e25546", "#e46153", "#e66d60", "#e8796d", "#ea867a", "#ec9288",
             "#ee9e95", "#f0aaa2", "#f2b6af", "#f4c2bc", "#f7ceca", "#f9dad7", "#fbe6e4"];
 
-        var textColors = ["#fff", "#fff", "#fff", "#fff", "#fff", "#fff",
+        const textColors = ["#fff", "#fff", "#fff", "#fff", "#fff", "#fff",
             "#fff", "#1d2125", "#1d2125", "#1d2125", "#1d2125",
             "#1d2125", "#1d2125", "#1d2125", "#1d2125", "#1d2125", "#1d2125"];
 

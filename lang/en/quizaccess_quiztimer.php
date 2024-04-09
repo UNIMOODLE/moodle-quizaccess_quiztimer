@@ -78,3 +78,6 @@ $string['quiztimer:manage'] = 'Manage quiztimer time settings';
 
 $string['eventslottimerupdateddescription'] = 'User with id {$a->userid} updated slot timer with id {$a->slot} with a new time of {$a->timevalue} {$a->timeunit}';
 $string['eventsectiontimerupdateddescription'] = 'User with id {$a->userid} updated section timer with id {$a->section} with a new time of {$a->timevalue} {$a->timeunit}';
+
+$string['timelimitedit'] = 'Time limit (no use of custom times)';
+$string['selecttypetimes'] = 'Select a time type to use customized quiz times';

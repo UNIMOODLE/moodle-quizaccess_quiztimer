@@ -77,3 +77,6 @@ $string['quiztimer:manage'] = 'Gestiona los ajustes de los tiempos de las reglas
 
 $string['eventslottimerupdateddescription'] = 'El usuario con id {$a->userid} ha actualizado el temporizador de la pregunta con id {$a->slot} con un nuevo tiempo de {$a->timevalue} {$a->timeunit}';
 $string['eventsectiontimerupdateddescription'] = 'El usuario con id {$a->userid} ha actualizado el temporizador de la sección con id {$a->section} con un nuevo tiempo de {$a->timevalue} {$a->timeunit}';
+
+$string['timelimitedit'] = 'Tiempo limite (sin uso de tiempos personalizados)';
+$string['selecttypetimes'] = 'Selecciona un tipo de tiempos para usar tiempos personalizados';

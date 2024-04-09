@@ -23,7 +23,8 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, aja
 
     const selectstrings = str.get_strings([{key: 'sectiontime', component: 'quizaccess_quiztimer'},
                                              {key: 'questiontime', component: 'quizaccess_quiztimer'},
-                                             {key: 'distributesectiontime', component: 'quizaccess_quiztimer'}, ]);
+                                             {key: 'distributesectiontime', component: 'quizaccess_quiztimer'},
+                                             {key: 'timelimitedit', component: 'quizaccess_quiztimer'},]);
     const unitsstrings = str.get_strings([{key: 'seconds', component: 'quizaccess_quiztimer'},
                                              {key: 'minutes', component: 'quizaccess_quiztimer'},
                                              {key: 'hours', component: 'quizaccess_quiztimer'},]);
@@ -787,15 +788,17 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, aja
     };
 
     return {
-        init: async function(timetype = 'section') {
+        init: async function(timetype = 'timelimit') {
             const warningtimestr = await str.get_string('warningtime', 'quizaccess_quiztimer');
             const noquestions = await str.get_string('noquestions', 'mod_quiz');
+            const selectatimetype = await str.get_string('selecttypetimes', 'quizaccess_quiztimer');
             $(document).ready(function() {
                 let navitem = $('.activity-header')[0];
                 $.when(selectstrings).done( selectstrings => {
                     let select = document.createElement('select');
                     select.setAttribute('class', 'custom-select urlselect timeselect');
                     select.setAttribute('id', 'id_quiztimer_quizmodeselector');
+                    select.add(new Option(selectstrings[3], 'timelimit'));
                     select.add(new Option(selectstrings[0], 'section'));
                     select.add(new Option(selectstrings[1], 'slots'));
                     select.add(new Option(selectstrings[2], 'equitative'));
@@ -805,8 +808,10 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, aja
                         selectedoption = 0;
                     } else if (select.options[1].value == timetype) {
                         selectedoption = 1;
-                    } else {
+                    } else if (select.options[2].value == timetype) {
                         selectedoption = 2;
+                    } else {
+                        selectedoption = 3;
                     }
                     select.options[selectedoption].setAttribute('selected', 'true');
                     select.addEventListener('change', change_time_edit_method, true);
@@ -821,6 +826,16 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, aja
                 secrettimetype.setAttribute("name", "timetype");
                 secrettimetype.setAttribute("value", timetype);
                 slotheader.append(secrettimetype);
+
+                if (timetype === 'timelimit') {
+                    let section = $('.section.main.clearfix')[0];
+                    section.setAttribute('style', 'display:none');
+                    let selecttypewarning = document.createElement('h2');
+                    selecttypewarning.append(selectatimetype);
+                    selecttypewarning.setAttribute('class', 'text text-info');
+                    document.querySelector('.statusbar').append(selecttypewarning);
+                    return;
+                }
 
                 let questions = $('.slot');
                 if (questions.length === 0) {

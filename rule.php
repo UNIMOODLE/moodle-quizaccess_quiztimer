@@ -71,9 +71,31 @@ class quizaccess_quiztimer extends quiz_access_rule_base {
             $arrayofoptions, ['onchange' => 'updateQuizSettingsOnChange();']);
             $mform->insertElementBefore($element, 'overduehandling');
             $mform->addHelpButton('timequestion', 'subtimes', 'quizaccess_quiztimer');
+        }else{
+            $arrayofoptions = [
+                'limit' => get_string('timelimit', 'quizaccess_quiztimer'),
+                'section' => get_string('sectiontime', 'quizaccess_quiztimer'),
+                'question' => get_string('questiontime', 'quizaccess_quiztimer'),
+                'page' => get_string('pagetime', 'quizaccess_quiztimer'),
+            ];
+
+            $element = $mform->createElement('select', 'timequestion',
+            get_string('subtimes', 'quizaccess_quiztimer'),
+            $arrayofoptions, ['onchange' => 'updateQuizSettingsOnChange();']);
+            $element->updateAttributes(['disabled' => 'disabled']);
+            $mform->insertElementBefore($element, 'overduehandling');
+            $mform->addHelpButton('timequestion', 'subtimes', 'quizaccess_quiztimer');
         }
         if ($quizid !== null && $quizid !== "") {
             $quiz = $DB->get_record('quizaccess_quiztimer', ['quiz' => $quizid]);
+
+            $totaltimesection = $DB->get_field('quizaccess_timedsections', 'SUM(timevalue)', ['quizid' => $quizid]);
+            if ($totaltimesection >= 60) {
+                $totaltimesection = $totaltimesection / 60;
+                $timeunit = 3;
+            } else {
+                $timeunit = 4;
+            }
             if (!empty($quiz)) {
                 if ($quiz->quiz_mode == 1) {
                     $mform->setDefault('timequestion', 'limit');
@@ -83,7 +105,9 @@ class quizaccess_quiztimer extends quiz_access_rule_base {
                     $mform->addElement('html',
                         '<script type="text/javascript">
                         document.getElementById("id_timelimit_number").disabled = true;
+                        document.getElementById("id_timelimit_number").value = '. $totaltimesection . ';
                         document.getElementById("id_timelimit_timeunit").disabled = true;
+                        document.getElementById("id_timelimit_timeunit").selectedIndex = '. $timeunit . ';
                         document.getElementById("id_timelimit_enabled").disabled = true;
                         document.getElementById("id_navmethod").value = "sequential";
                         document.getElementById("id_navmethod").disabled = true;
@@ -94,12 +118,21 @@ class quizaccess_quiztimer extends quiz_access_rule_base {
                         </script>'
                     );
                 } else if ($quiz->quiz_mode == 3) {
+                    $totaltime = $DB->get_field('quizaccess_timedslots', 'SUM(timevalue)', ['quizid' => $quizid]);
+                    if ($totaltime >= 60) {
+                        $totaltime = $totaltime / 60;
+                        $timeunit = 3;
+                    } else {
+                        $timeunit = 4;
+                    }
                     $mform->setDefault('timequestion', 'question');
                     $mform->addElement(
                         'html',
                         '<script type="text/javascript">
                         document.getElementById("id_timelimit_number").disabled = true;
+                        document.getElementById("id_timelimit_number").value = '. $totaltime . ';
                         document.getElementById("id_timelimit_timeunit").disabled = true;
+                        document.getElementById("id_timelimit_timeunit").selectedIndex = '. $timeunit . ';
                         document.getElementById("id_timelimit_enabled").disabled = true;
                         document.getElementById("id_navmethod").value = "free";
                         document.getElementById("id_navmethod").disabled = true;
@@ -115,6 +148,8 @@ class quizaccess_quiztimer extends quiz_access_rule_base {
                         'html',
                         '<script type="text/javascript">
                         document.getElementById("id_timelimit_number").disabled = true;
+                        document.getElementById("id_timelimit_number").value = '. $totaltimesection . ';
+                        document.getElementById("id_timelimit_timeunit").selectedIndex = '. $timeunit . ';
                         document.getElementById("id_timelimit_timeunit").disabled = true;
                         document.getElementById("id_timelimit_enabled").disabled = true;
                         document.getElementById("id_navmethod").value = "free";
@@ -451,11 +486,7 @@ function show_timer_based_on_option($option) {
 
                 // Check if the attempt is valid.
                 if ($attempt) {
-                    /*$quizid = $attempt->get_quiz();
-                    $quiz = new quiz($quizid, null,null);
-                    $quiztimer = new quizaccess_quiztimer($attempt, $quiz);
-                    $endtime = $quiztimer->end_time($attempt);
-                    $endtime = $endtime + time();*/
+
                     $data = [
                         'attemptid' => $attemptid,
                         'tiempos' => $tiempos,
@@ -695,9 +726,6 @@ function get_preflight_errors() {
                         empty($secdata->heading) ? $secdata->heading = get_string('section') . $secdata->id : '';
                         $quiztimeserrors['sectime' . $secdata->id] = get_string('section') . ': ' . $secdata->heading;
                     }
-                }
-                if (has_capability('mod/quiz:manage', $context, $USER)) {
-                    !$quiztimeserrors ? quiz_repaginate_questions($quiz->id, 0) : '';
                 }
                 break;
             default:
