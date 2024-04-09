@@ -53,9 +53,6 @@ class quizaccess_quiztimer extends quiz_access_rule_base {
     public static function add_settings_form_fields(mod_quiz_mod_form $quizform, MoodleQuickForm $mform): void {
         global $DB;
 
-        $context = $quizform->get_context();
-        $canedit = 1;
-
         $currentvalue = null;
         $quizid = $quizform->get_instance();
         if (!isset($_GET['add']) || $_GET['add'] !== 'quiz') {
@@ -237,9 +234,7 @@ class quizaccess_quiztimer extends quiz_access_rule_base {
             </script>'
         );
 
-        if (!$currentvalue) {
-            $mform->setAdvanced('timequestion');
-        }
+
 
     }
 
@@ -513,14 +508,10 @@ function show_timer_based_on_option($option) {
             $sql = "SELECT * FROM {quizaccess_timedslots} WHERE quizid = :quizid ORDER BY slot ASC";
             $params = ['quizid' => $quizid];
             $quiz = $DB->get_records_sql($sql, $params);
-            $counttime = count($quiz);
 
             $tiempos = array_column($quiz, 'timevalue');
             $tiempos = array_map('intval', $tiempos);
 
-            $sumatorio = array_sum($tiempos);
-
-            $existingdata = $DB->get_records('quiz');
             $data = new stdClass;
             $data->id = $id;
             $data->timelimit = 0;
@@ -610,9 +601,7 @@ function show_timer_based_on_option($option) {
                     $tiempos[] = $timevalue;
                 }
             }
-            $counttime = count($tiempos);
 
-            $sumatorio = array_sum($tiempos);
 
             if (!(basename($_SERVER['PHP_SELF']) == 'summary.php' || basename($_SERVER['PHP_SELF']) == 'review.php')) {
                 // Get the current attempt instance.
