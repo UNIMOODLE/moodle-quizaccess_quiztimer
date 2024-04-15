@@ -42,6 +42,8 @@ Feature: An admin configure quiztimer in a quiz
     And I press the enter key
     And I select "Adjust questions times" from the "id_quiztimer_editviewselector" singleselect
     And I wait "2" seconds
+    And I select "Time for section" from the "id_quiztimer_quizmodeselector" singleselect
+    And I wait "2" seconds
     Then I click on the edit icon
     And I wait "2" seconds
     And I press the delete key

@@ -247,8 +247,12 @@ class quizaccess_quiztimer extends quiz_access_rule_base {
      * @return self|null A new instance of the class or null based on conditions
      */
     public static function make(quiz $quizobj, $timenow, $canignoretimelimits) {
+        global $DB;
         if (!empty($quizobj->get_quiz()->timelimit)) {
-            return null;
+            $quizmode = $DB->get_field('quizaccess_quiztimer', 'quiz_mode', ['quiz' => $quizobj->get_quiz()->id]);
+            if ($quizmode == 1 || !$quizmode) {
+                return null;
+            }
         }
         return new self($quizobj, $timenow);
     }
@@ -446,7 +450,7 @@ function show_timer_based_on_option($option) {
         // Timer inside the quiz
         // Check if the 'attempt' parameter is present in the URL.
         if (isset($_GET['attempt'])) {
-            global $DB, $quiz, $PAGE;
+            global $DB, $quiz, $PAGE, $USER;
 
             $attemptid = required_param('attempt', PARAM_INT);
             $attempt = quiz_attempt::create($attemptid);
@@ -458,7 +462,23 @@ function show_timer_based_on_option($option) {
             $sql = "SELECT * FROM {quizaccess_timedsections} WHERE quizid = :quizid ORDER BY sectionid ASC";
             $params = ['quizid' => $quizid];
             $quiz = $DB->get_records_sql($sql, $params);
-            $counttime = count($quiz);
+            $totalquiztime = array_sum(array_column($quiz, 'timevalue'));
+
+            $quizoverride = false;
+
+            if ($DB->get_record('quiz_overrides', ['quiz' => $quizid, 'userid' => $USER->id], 'timelimit', IGNORE_MISSING)) {
+                $quizoverride = $DB->get_record('quiz_overrides', ['quiz' => $quizid, 'userid' => $USER->id], 'timelimit', IGNORE_MISSING);
+            } else {
+                $cm = $attempt->get_cm();
+                $currentgroupid = groups_get_activity_group($cm);
+                $quizoverride = $DB->get_record('quiz_overrides', ['quiz' => $quizid, 'groupid' => $currentgroupid], 'timelimit', IGNORE_MISSING);
+            }
+            if ($quizoverride) {
+                $timefraction = $quizoverride->timelimit / $totalquiztime;
+                foreach($quiz as $quizdata) {
+                    $quizdata->timevalue = round($quizdata->timevalue * $timefraction, 0);
+                }
+            }
 
             $tiempos = array_column($quiz, 'timevalue');
             $tiempos = array_map('intval', $tiempos);
@@ -467,7 +487,6 @@ function show_timer_based_on_option($option) {
             $existingdata = $DB->get_records('quiz');
             $data = new stdClass;
             $data->id = $id;
-            $data->timelimit = 0;
 
             $data->questionsperpage = 0;
             if ($DB !== null) {
@@ -498,7 +517,7 @@ function show_timer_based_on_option($option) {
         // Timer inside the quiz
         // Check if the 'attempt' parameter is present in the URL.
         if (isset($_GET['attempt'])) {
-            global $DB, $quiz, $PAGE;
+            global $DB, $quiz, $PAGE, $USER;
 
             $attemptid = required_param('attempt', PARAM_INT);
             $attempt = quiz_attempt::create($attemptid);
@@ -508,13 +527,27 @@ function show_timer_based_on_option($option) {
             $sql = "SELECT * FROM {quizaccess_timedslots} WHERE quizid = :quizid ORDER BY slot ASC";
             $params = ['quizid' => $quizid];
             $quiz = $DB->get_records_sql($sql, $params);
+            $quizoverride = false;
+            $totalquiztime = array_sum(array_column($quiz, 'timevalue'));
 
+            if ($DB->get_record('quiz_overrides', ['quiz' => $quizid, 'userid' => $USER->id], 'timelimit', IGNORE_MISSING)) {
+                $quizoverride = $DB->get_record('quiz_overrides', ['quiz' => $quizid, 'userid' => $USER->id], 'timelimit', IGNORE_MISSING);
+            } else {
+                $cm = $attempt->get_cm();
+                $currentgroupid = groups_get_activity_group($cm);
+                $quizoverride = $DB->get_record('quiz_overrides', ['quiz' => $quizid, 'groupid' => $currentgroupid], 'timelimit', IGNORE_MISSING);
+            }
+            if ($quizoverride) {
+                $timefraction = $quizoverride->timelimit / $totalquiztime;
+                foreach($quiz as $quizdata) {
+                    $quizdata->timevalue = round($quizdata->timevalue * $timefraction, 0);
+                }
+            }
             $tiempos = array_column($quiz, 'timevalue');
             $tiempos = array_map('intval', $tiempos);
 
             $data = new stdClass;
             $data->id = $id;
-            $data->timelimit = 0;
 
             $data->questionsperpage = 1;
             if ($DB !== null) {
@@ -545,7 +578,7 @@ function show_timer_based_on_option($option) {
         // Timer inside the quiz
         // Check if the 'attempt' parameter is present in the URL.
         if (isset($_GET['attempt'])) {
-            global $DB, $quiz, $PAGE;
+            global $DB, $quiz, $PAGE, $USER;
 
             $attemptid = required_param('attempt', PARAM_INT);
             $attempt = quiz_attempt::create($attemptid);
@@ -602,6 +635,22 @@ function show_timer_based_on_option($option) {
                 }
             }
 
+            $quizoverride = false;
+            $totalquiztime = array_sum($tiempos);
+
+            if ($DB->get_record('quiz_overrides', ['quiz' => $quizid, 'userid' => $USER->id], 'timelimit', IGNORE_MISSING)) {
+                $quizoverride = $DB->get_record('quiz_overrides', ['quiz' => $quizid, 'userid' => $USER->id], 'timelimit', IGNORE_MISSING);
+            } else {
+                $cm = $attempt->get_cm();
+                $currentgroupid = groups_get_activity_group($cm);
+                $quizoverride = $DB->get_record('quiz_overrides', ['quiz' => $quizid, 'groupid' => $currentgroupid], 'timelimit', IGNORE_MISSING);
+            }
+            if ($quizoverride) {
+                $timefraction = $quizoverride->timelimit / $totalquiztime;
+                foreach($tiempos as $key => $value) {
+                    $tiempos[$key] = round($value * $timefraction, 0);
+                }
+            }
 
             if (!(basename($_SERVER['PHP_SELF']) == 'summary.php' || basename($_SERVER['PHP_SELF']) == 'review.php')) {
                 // Get the current attempt instance.

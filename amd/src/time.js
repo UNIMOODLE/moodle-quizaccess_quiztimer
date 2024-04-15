@@ -28,6 +28,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, aja
     const unitsstrings = str.get_strings([{key: 'seconds', component: 'quizaccess_quiztimer'},
                                              {key: 'minutes', component: 'quizaccess_quiztimer'},
                                              {key: 'hours', component: 'quizaccess_quiztimer'},]);
+    const repaginatewarning = str.get_string('repaginatewarning', 'quizaccess_quiztimer');
     /**
      * When a key is pressed, editing a question time,
      * checks what it should do, and displays the question
@@ -269,22 +270,26 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, aja
      * @param {event} e
      */
     const change_time_edit_method = function(e) {
-        let editmethod = e.currentTarget.value;
-        let url = location.href;
-        let k = url.search('&edittype=');
-        if (k != -1) {
-            let param = url.substring(k);
-            let editmethod2 = param.split('=')[1];
-            url = url.replace(editmethod2, editmethod);
-        } else {
-            url += '&edittype=' + editmethod;
-        }
-        url = url.replace('#', '');
-        get_quiz_id(cmid).then(response => {
-            let quizid = JSON.parse(response).quizid;
-            repaginate_slots(quizid,editmethod).done( () => {
-                window.location.href = url;
-            });
+        $.when(repaginatewarning).done( repaginatestring => {
+            if (confirm(repaginatestring)) {
+                let editmethod = e.currentTarget.value;
+                let url = location.href;
+                let k = url.search('&edittype=');
+                if (k != -1) {
+                    let param = url.substring(k);
+                    let editmethod2 = param.split('=')[1];
+                    url = url.replace(editmethod2, editmethod);
+                } else {
+                    url += '&edittype=' + editmethod;
+                }
+                url = url.replace('#', '');
+                get_quiz_id(cmid).then(response => {
+                    let quizid = JSON.parse(response).quizid;
+                    repaginate_slots(quizid,editmethod).done( () => {
+                        window.location.href = url;
+                    });
+                });
+            }
         });
     };
 
@@ -775,6 +780,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, aja
     const quiz_has_attemps = () => {
         let quizhasattemps = document.querySelector('.statusdisplay');
         if (quizhasattemps !== null) {
+            document.querySelector('#id_quiztimer_quizmodeselector').setAttribute('disabled', true);
             let mainquizslots = document.querySelector('.slots');
             let selectors = mainquizslots.querySelectorAll('select');
             let pencils = mainquizslots.querySelectorAll('.fa-pencil');

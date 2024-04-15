@@ -496,7 +496,6 @@ class quizaccess_quiztimer_external extends external_api {
                 $quiztime->time += $slot->timevalue;
             }
         }
-
         return json_encode($quiztime);
     }
 

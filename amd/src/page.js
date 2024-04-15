@@ -18,6 +18,11 @@ define(function(require, exports, module) {
        divElement.disabled = true;
        divElement.innerHTML = "Timer disabled";
 
+       var quizTimerWrapper = document.getElementById("quiz-timer-wrapper");
+       if (quizTimerWrapper.style.display === "flex") {
+       quizTimerWrapper.style.display = "";
+       }
+
        var currentPageURL = window.location.href;
        var urlParams = new URLSearchParams(currentPageURL);
        var pageID = urlParams.get("page");

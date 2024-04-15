@@ -81,3 +81,6 @@ $string['eventsectiontimerupdateddescription'] = 'User with id {$a->userid} upda
 
 $string['timelimitedit'] = 'Time limit (no use of custom times)';
 $string['selecttypetimes'] = 'Select a time type to use customized quiz times';
+
+$string['repaginatewarning'] = 'Selecting slots or sections edit type may cause the quiz slots to repaginate.
+Do you still wish to continue with the operation?';

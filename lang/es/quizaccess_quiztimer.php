@@ -80,3 +80,6 @@ $string['eventsectiontimerupdateddescription'] = 'El usuario con id {$a->userid}
 
 $string['timelimitedit'] = 'Tiempo limite (sin uso de tiempos personalizados)';
 $string['selecttypetimes'] = 'Selecciona un tipo de tiempos para usar tiempos personalizados';
+
+$string['repaginatewarning'] = 'Al seleccionar métodos de edición por preguntas o secciones puede repaginar las preguntas del quiz.
+¿Deséa continuar con la operación?';
