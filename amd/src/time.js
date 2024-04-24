@@ -303,14 +303,13 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, aja
     const load_section_time = (section) => {
         let questions = section.querySelectorAll('.slot');
         let totaltime = get_total_time_of_questions(questions);
-        let sectiontimeunit = parseFloat(section.querySelector('.time-select').value);
-        totaltime = (get_time_in_unit(sectiontimeunit, totaltime));
+        $.when(unitsstrings).done( unitsstrings => {
+            totaltime = format_pagetime(totaltime, unitsstrings[0], unitsstrings[1], unitsstrings[2]);
+        });
         section.querySelector('.total-section-time').innerHTML = totaltime;
         if (parseFloat(section.querySelector('.time-select').value) === 0) {
             section.querySelector('.total-section-unit').value = 1;
         }
-        sectiontimeunit = section.querySelector('.time-select').options[sectiontimeunit].innerHTML;
-        section.querySelector('.total-section-unit').innerHTML = sectiontimeunit;
     };
 
     const repaginate_slots = (quizid, editmethod) => ajax.call([{
@@ -365,10 +364,10 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, aja
             get_section_time(quizid, sectionid).then(response => {
                 let timedata = JSON.parse(response);
                 if(!timedata) {
-                section.querySelector('.time-select').value = 2;
-                section.querySelector('.total-section-time').innerHTML = '';
-                section.querySelector('.total-section-unit').innerHTML = '';
-                section.querySelector('.section-time').innerHTML = 0;
+                    section.querySelector('.time-select').value = 2;
+                    section.querySelector('.total-section-time').innerHTML = '';
+                    section.querySelector('.total-section-unit').innerHTML = '';
+                    section.querySelector('.section-time').innerHTML = 0;
                 }
                 let unit = timedata.timeunit;
                 let value = get_time_in_unit(parseFloat(unit), parseFloat(timedata.timevalue));
@@ -834,8 +833,11 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, aja
                 slotheader.append(secrettimetype);
 
                 if (timetype === 'timelimit') {
-                    let section = $('.section.main.clearfix')[0];
-                    section.setAttribute('style', 'display:none');
+                    let sections = $('.section.main.clearfix');
+                    for (let x = 0; x < sections.length; x ++) {
+                        let section = sections[x];
+                        section.setAttribute('style', 'display:none');
+                    }
                     let selecttypewarning = document.createElement('h2');
                     selecttypewarning.append(selectatimetype);
                     selecttypewarning.setAttribute('class', 'text text-info');

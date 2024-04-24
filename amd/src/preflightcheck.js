@@ -16,7 +16,7 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-define(['jquery', 'core/str'], function($, str) {
+define(['jquery', 'core/str', 'core/notification'], function($, str, notification) {
 
     const change_quiz_form = (e) => {
         target = e.currentTarget;
@@ -25,7 +25,8 @@ define(['jquery', 'core/str'], function($, str) {
         window.location.href = va;
     }
     selectstrings = str.get_strings([{key: 'questions', component: 'quiz'},
-                                {key: 'quiztime', component: 'quizaccess_quiztimer'},]);
+                                {key: 'quiztime', component: 'quizaccess_quiztimer'},
+                                {key: 'pagingchangesnotapply', component: 'quizaccess_quiztimer'}, ]);
         return {
             init: function(cmid, editmethod, webroot) {           
                 $(document).ready(function() {
@@ -51,6 +52,18 @@ define(['jquery', 'core/str'], function($, str) {
                                 select.add(new Option(selectstrings[0], '/mod/quiz/edit.php?cmid=' + cmid + '') );
                                 select.add(new Option(selectstrings[1], '/mod/quiz/accessrule/quiztimer/edit.php?cmid=' + cmid +
                                  '&editmethod=time'));
+                                 if (editmethod == 'section' || editmethod == 'slots') {
+                                    notification.addNotification({
+                                        message: selectstrings[2],
+                                        type: "warning"
+                                     });
+                                     let pagebreaks = document.querySelectorAll('.page_split_join');
+                                     pagebreaks.forEach(pagebreak => {
+                                        pagebreak.addEventListener('click', function() {
+                                            alert(selectstrings[2]);
+                                        })
+                                     });
+                                }
                             }
                             let qactions = $('.mod_quiz-edit-action-buttons')[0];
                             qactions == null ? $('.activity-header')[0].append(select) : qactions.append(select);

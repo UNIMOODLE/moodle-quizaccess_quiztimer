@@ -44,21 +44,46 @@ class quiztimer_set_quiz_config_test extends \advanced_testcase {
 
     // Write the tests here as public funcions.
     // Please refer to {@link https://docs.moodle.org/dev/PHPUnit} for more details on PHPUnit tests in Moodle.
+    
+    /**
+     * @var \stdClass
+     */
     private static $course;
-    private static $context;
+
+    /**
+     * @var \stdClass
+     */
     private static $coursecontext;
+
+    /**
+     * @var \stdClass
+     */
     private static $user;
 
+    /**
+     * @var int
+     */
     private static $reviewattempt;
-    private static $timeclose;
-    private static $attempts;
 
-    private static $cm;
+    /**
+     * @var int
+     */
+    private static $timeclose;
+
+    /**
+     * @var \stdClass
+     */
     private static $quiz;
+
+    /**
+     * Course start.
+     */
     private const COURSE_START = 1706009000;
+
+    /**
+     * Course end.
+     */
     private const COURSE_END = 1906009000;
-    private const CM_DATESTART = 1706009000;
-    private const CM_DATEEND = 1906009000;
     public function setUp(): void {
         global $USER;
         parent::setUp();
@@ -119,11 +144,11 @@ class quiztimer_set_quiz_config_test extends \advanced_testcase {
 
         $reflectionmethod = new ReflectionMethod(quizaccess_quiztimer\quiztimer::class, 'before_update');
         $reflectionmethod->setAccessible(true);
-        $defineproperties = $reflectionmethod->invoke($quiztimer);
+        $beforeupdate = $reflectionmethod->invoke($quiztimer);
 
         $reflectionmethod = new ReflectionMethod(quizaccess_quiztimer\quiztimer::class, 'before_create');
         $reflectionmethod->setAccessible(true);
-        $defineproperties = $reflectionmethod->invoke($quiztimer);
+        $beforecreate = $reflectionmethod->invoke($quiztimer);
 
         $quiztimer->before_save();
     }

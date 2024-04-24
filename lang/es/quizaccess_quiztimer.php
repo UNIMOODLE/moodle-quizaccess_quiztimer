@@ -81,5 +81,11 @@ $string['eventsectiontimerupdateddescription'] = 'El usuario con id {$a->userid}
 $string['timelimitedit'] = 'Tiempo limite (sin uso de tiempos personalizados)';
 $string['selecttypetimes'] = 'Selecciona un tipo de tiempos para usar tiempos personalizados';
 
-$string['repaginatewarning'] = 'Al seleccionar métodos de edición por preguntas o secciones puede repaginar las preguntas del quiz.
+$string['repaginatewarning'] = 'Al seleccionar métodos de edición por preguntas o secciones puede repaginar las preguntas del quiz:
+- Tiempo por secciones: Todas las preguntas en una página dentro de cada sección.
+- Tiempo por preguntas: 1 pregunta por cada página.
 ¿Deséa continuar con la operación?';
+
+$string['pagingchangesnotapply'] = 'El quiz usa tiempos personalizados por secciones o preguntas, los cambies que realices a las paginas del quiz no se aplicarán y serán sobrescritos';
+$string['canteditquiztype'] = 'No puede editar el modo de tiempo del cuestionario porque ya ha sido respondido.';
+$string['disabledbycustomtimer'] = 'Fijo por el modo de tiempos del cuestionario en la seccion de temporalización. ';

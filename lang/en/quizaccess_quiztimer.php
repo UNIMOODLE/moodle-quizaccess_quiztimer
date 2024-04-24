@@ -82,5 +82,11 @@ $string['eventsectiontimerupdateddescription'] = 'User with id {$a->userid} upda
 $string['timelimitedit'] = 'Time limit (no use of custom times)';
 $string['selecttypetimes'] = 'Select a time type to use customized quiz times';
 
-$string['repaginatewarning'] = 'Selecting slots or sections edit type may cause the quiz slots to repaginate.
+$string['repaginatewarning'] = 'Selecting question or sections edit type may cause the quiz slots to repaginate as follows:
+- Time for section: All questions in one page for each section.
+- Time for question: 1 question per page.
 Do you still wish to continue with the operation?';
+
+$string['pagingchangesnotapply'] = 'This quiz has a custom timer selected using slots or sections times, your changes made to the questions pagination will not be applied, getting overwrited';
+$string['canteditquiztype'] = 'You cannot edit quiz times type because this quiz has been attempted.';
+$string['disabledbycustomtimer'] = 'Fixed because of the custom timer selected in timing section.';

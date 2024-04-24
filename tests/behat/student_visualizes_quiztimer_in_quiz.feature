@@ -47,6 +47,7 @@ Feature: A student visualizes a quiz with a quiztimer configured
     And I press the enter key
     And I select "Adjust questions times" from the "id_quiztimer_editviewselector" singleselect
     And I wait "2" seconds
+    And I confirm the repaginate warning dialog
     And I select "Time for section" from the "id_quiztimer_quizmodeselector" singleselect
     And I wait "2" seconds
     And I click on the edit icon
@@ -89,6 +90,7 @@ Feature: A student visualizes a quiz with a quiztimer configured
     And I wait "2" seconds
     And I select "Adjust questions times" from the "id_quiztimer_editviewselector" singleselect
     And I wait "1" seconds
+    And I confirm the repaginate warning dialog
     And I select "Time for question" from the "id_quiztimer_quizmodeselector" singleselect
     And I wait "3" seconds
     And I click on the pencil icon to edit the time of the question
@@ -143,6 +145,7 @@ Feature: A student visualizes a quiz with a quiztimer configured
     And I wait "3" seconds
     And I select "Adjust questions times" from the "id_quiztimer_editviewselector" singleselect
     And I wait "3" seconds
+    And I confirm the repaginate warning dialog
     And I select "Distribute the section time in pages" from the "id_quiztimer_quizmodeselector" singleselect
     And I wait "3" seconds
     And I should see "Total section time:"

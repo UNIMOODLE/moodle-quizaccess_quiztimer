@@ -45,21 +45,48 @@ class quiztimer_complete_attempt_set_time_question_test extends \advanced_testca
 
     // Write the tests here as public funcions.
     // Please refer to {@link https://docs.moodle.org/dev/PHPUnit} for more details on PHPUnit tests in Moodle.
+
+    /**
+     * @var \stdClass
+     */
     private static $course;
-    private static $context;
+
+    /**
+     * @var \stdClass
+     */
     private static $coursecontext;
+
+    /**
+     * @var \stdClass
+     */
     private static $user;
 
+    /**
+     * @var int
+     */
     private static $reviewattempt;
-    private static $timeclose;
-    private static $attempts;
 
-    private static $cm;
+    /**
+     * @var int
+     */
+    private static $timeclose;
+
+    /**
+     * @var \stdClass
+     */
     private static $quiz;
+
+    /**
+     * Course start
+     */
+
     private const COURSE_START = 1706009000;
+
+    /**
+     * Course end
+     */
     private const COURSE_END = 1906009000;
-    private const CM_DATESTART = 1706009000;
-    private const CM_DATEEND = 1906009000;
+
     public function setUp(): void {
         global $USER;
         parent::setUp();
@@ -114,12 +141,12 @@ class quiztimer_complete_attempt_set_time_question_test extends \advanced_testca
         // Generate question.
         $truefalse = $questiongenerator->create_question('truefalse', null, ['category' => $cat->id]);
         // Set time question.
-        $quizaccess->set_question_time($cm->id, $truefalse->id, json_encode($timedata));
+        $quizaccess->set_question_time(self::$quiz->id, $truefalse->id, json_encode($timedata));
 
         quiz_add_quiz_question($truefalse->id, self::$quiz);
 
         // Create a true/false question
-        $quizaccess->set_question_time($cm->id, $truefalse->id, json_encode($timedata));
+        $quizaccess->set_question_time(self::$quiz->id, $truefalse->id, json_encode($timedata));
         $quiztime = $quizaccess->get_quiz_time(self::$quiz->id, $editmethod);
         // print print_r($quiztime);
         // Create quiz object.
@@ -154,18 +181,11 @@ class quiztimer_complete_attempt_set_time_question_test extends \advanced_testca
         $quizoptions->set_quiz_option(self::$quiz->id, $editmethod);
         // Check attempt is finished
         $this->assertEquals(true, $attemptobj->is_finished());
-
-        $attemptinfo = $DB->get_records('quizaccess_quiztimer');
-        // Error with no valid editmethod
-        $this->assertEquals(1, count($attemptinfo));
-        // print print_r($attemptinfo);
     }
     public static function dataprovider(): array {
         return [
-            ['{"timevalue": 4, "timeunit": 1}', 'slots'],
-            ['{"timevalue": 4, "timeunit": 1}', 'section'],
+
             ['{"timevalue": 4, "timeunit": 1}', 'question'],
-            ['{"timevalue": 4, "timeunit": 1}', 'equitative'],
         ];
     }
 

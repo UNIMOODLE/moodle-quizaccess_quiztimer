@@ -37,12 +37,11 @@ global $CFG;
 require_once($CFG->dirroot . '/config.php');
 require_once($CFG->dirroot . '/question/engine/tests/helpers.php');
 require_once($CFG->dirroot . '/mod/quiz/accessrule/quiztimer/externallib.php');
-require_once($CFG->dirroot . '/mod/quiz/accessrule/quiztimer/rule.php');
 require_once($CFG->dirroot . '/mod/quiz/accessrule/quiztimer/classes/quiz_options.php');
 
 use quizaccess_quiztimer\quiz_options;
 
-class quiztimer_set_nav_quiz_mode_test extends \advanced_testcase {
+class quiztimer_events_test extends \advanced_testcase {
 
     // Write the tests here as public funcions.
     // Please refer to {@link https://docs.moodle.org/dev/PHPUnit} for more details on PHPUnit tests in Moodle.
@@ -51,7 +50,12 @@ class quiztimer_set_nav_quiz_mode_test extends \advanced_testcase {
      * @var \stdClass
      */
     private static $course;
-    
+
+    /**
+     * @var \stdClass
+     */
+    private static $context;
+
     /**
      * @var \stdClass
      */
@@ -63,7 +67,7 @@ class quiztimer_set_nav_quiz_mode_test extends \advanced_testcase {
     private static $user;
 
     /**
-     * @var int
+     * @var \stdClass
      */
     private static $reviewattempt;
 
@@ -71,21 +75,22 @@ class quiztimer_set_nav_quiz_mode_test extends \advanced_testcase {
      * @var int
      */
     private static $timeclose;
-
+    
     /**
      * @var \stdClass
      */
     private static $quiz;
 
     /**
-     * Course start.
+     * @var int
      */
     private const COURSE_START = 1706009000;
 
     /**
-     * Course end.
+     * Course end
      */
     private const COURSE_END = 1906009000;
+
     public function setUp(): void {
         global $USER;
         parent::setUp();
@@ -104,95 +109,53 @@ class quiztimer_set_nav_quiz_mode_test extends \advanced_testcase {
     }
 
     /**
-     * Set nav quiz mode
+     * Manage events
      *
-     * Setter the navigator quiz mode
+     * Manage events
      *
      * @package    quizaccess_quiztimer
      * @copyright  2023 Proyecto UNIMOODLE
-     * @covers \quiztimer_set_nav_quiz_mode_test::set_nav_quiz_mode
+     * @covers \quiztimer_events_test::events
      * @dataProvider dataprovider
-     * @param string $param Parameters (timevalue and timeunit)
+     * @param string $eventname Name of event
      * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
      */
-    public function test_set_nav_quiz_mode($param, $editmethod, $optionnavigation) {
+    public function test_events($eventname) {
         global $DB, $SITE;
-
-        $timedata = new \stdClass();
-        $datadecoded = json_decode($param);
-        $timedata->value = $datadecoded->timevalue;
-        $timedata->unit = $datadecoded->timeunit;
 
         $quizgenerator = self::getDataGenerator()->get_plugin_generator('mod_quiz');
         // Generate quiz.
         self::$quiz = $quizgenerator->create_instance(['course' => self::$course->id,
             'seb_program_autocomplete_program_quiz' => [1],
-            'grade' => 100.0,
-            'sumgrades' => 2,
-            'layout' => '1,0',
             ]);
-
+        $quizobj = \quiz::create(self::$quiz->id, self::$user->id);
         $cm = get_coursemodule_from_instance('quiz', self::$quiz->id, self::$course->id);
         $this->assertNotNull($cm);
-        $questiongenerator = $this->getDataGenerator()->get_plugin_generator('core_question');
-        $cat = $questiongenerator->create_question_category();
-        $quizaccess = new \quizaccess_quiztimer_external();
-        // Generate question.
-        $truefalse = $questiongenerator->create_question('truefalse', null, ['category' => $cat->id]);
-        // Set time question.
-        $quizaccess->set_question_time(self::$quiz->id, $truefalse->id, json_encode($timedata));
 
-        quiz_add_quiz_question($truefalse->id, self::$quiz);
+        $eventclassname = "\\quizaccess_quiztimer\\event\\".$eventname;
+        $eventname == 'slot_timer_updated' ? $extravalue = 'slot' : $extravalue = 'section';
+        $event = $eventclassname::create([
+            'objectid' => self::$quiz->id,
+            'context' => \context_module::instance($cm->id),
+            'other' => [
+                'multiplesess' => "1",
+                'userid' => self::$user->id,
+                $extravalue => 1,
+                'timevalue' => 1,
+                'timeunit' => 1
+            ],
+        ]);
+        $this->assertIsString($event->get_description());
+        $this->assertIsString($event->get_name());
+        $this->assertFalse($event->get_objectid_mapping());
 
-        // Create a true/false question
-        $quizaccess->set_question_time(self::$quiz->id, $truefalse->id, json_encode($timedata));
-        $quiztime = $quizaccess->get_quiz_time(self::$quiz->id, $editmethod);
-        // print print_r($quiztime);
-        // Create quiz object.
-        $quizobj = \quiz::create(self::$quiz->id, self::$user->id);
-
-        $quba = question_engine::make_questions_usage_by_activity('mod_quiz', $quizobj->get_context());
-        $quba->set_preferred_behaviour($quizobj->get_quiz()->preferredbehaviour);
-
-        $this->assertNotNull($quizaccess->get_question_time($truefalse->id));
-        $this->assertNotNull($truefalse);
-        $timenow = time();
-        // Create attempt.
-        $attempt = quiz_create_attempt($quizobj, 1, false, $timenow, false, self::$user->id);
-        // Start attempt.
-        quiz_start_new_attempt($quizobj, $quba, $attempt, 1, $timenow);
-
-        // Save question started.
-        quiz_attempt_save_started($quizobj, $quba, $attempt);
-
-        $attemptobj = quiz_attempt::create($attempt->id);
-        $attemptobj->process_submitted_actions($timenow, false, [1 => ['answer' => '0']]);
-
-        // Proccess answers of participant
-        $attemptobj = quiz_attempt::create($attempt->id);
-        $this->assertTrue($attemptobj->has_response_to_at_least_one_graded_question());
-
-        $rule = new \quizaccess_quiztimer($attempt, self::$quiz);
-        $rule->updatequiznavmethod($cm->id, $optionnavigation);
-
-        // Finish attempt.
-        $attemptobj->process_finish(time(), false);
-        // print print_r($attempt);
-        $quizoptions = new quiz_options();
-        $quizoptions->set_quiz_option(self::$quiz->id, $editmethod);
-        // Check attempt is finished
-        $this->assertEquals(true, $attemptobj->is_finished());
-
-        $attemptinfo = $DB->get_records('quizaccess_quiztimer');
-        // Error with no valid editmethod
-        $this->assertEquals(1, count($attemptinfo));
     }
     public static function dataprovider(): array {
         return [
-            ['{"timevalue":"10","timeunit": "1"}', 'slots', 1],
-            ['{"timevalue":"20","timeunit": "2"}', 'slots', 2],
-            ['{"timevalue":"20","timeunit":"3"}', 'slots', 3],
+            ['slot_timer_updated'],
+            ['section_timer_updated'],
         ];
     }
 
 }
+

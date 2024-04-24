@@ -51,7 +51,7 @@ class quizaccess_quiztimer extends quiz_access_rule_base {
      * @param MoodleQuickForm $mform The Moodle QuickForm object.
      */
     public static function add_settings_form_fields(mod_quiz_mod_form $quizform, MoodleQuickForm $mform): void {
-        global $DB;
+        global $DB, $PAGE, $CFG;
 
         $currentvalue = null;
         $quizid = $quizform->get_instance();
@@ -94,6 +94,16 @@ class quizaccess_quiztimer extends quiz_access_rule_base {
                 $timeunit = 4;
             }
             if (!empty($quiz)) {
+                if (quiz_has_attempts($quizid)) {
+                    $attempts = $DB->count_records('quiz_attempts', ['quiz' => $quizid, 'preview' => 0]);
+                    $url = $CFG->wwwroot . '/mod/quiz/report.php?id=' . $quizform->get_coursemodule()->id . '&mode=overview';
+                    $PAGE->requires->js_call_amd('quizaccess_quiztimer/mod_form', 'init',
+                        [$url, get_string('canteditquiztype', 'quizaccess_quiztimer'),
+                        $attempts, get_string('disabledbycustomtimer', 'quizaccess_quiztimer'), ]);
+                } else {
+                    $PAGE->requires->js_call_amd('quizaccess_quiztimer/mod_form', 'init', [0, 0, 0,
+                        get_string('disabledbycustomtimer', 'quizaccess_quiztimer'), ]);
+                }
                 if ($quiz->quiz_mode == 1) {
                     $mform->setDefault('timequestion', 'limit');
 
@@ -131,7 +141,7 @@ class quizaccess_quiztimer extends quiz_access_rule_base {
                         document.getElementById("id_timelimit_timeunit").disabled = true;
                         document.getElementById("id_timelimit_timeunit").selectedIndex = '. $timeunit . ';
                         document.getElementById("id_timelimit_enabled").disabled = true;
-                        document.getElementById("id_navmethod").value = "free";
+                        document.getElementById("id_navmethod").value = "sequential";
                         document.getElementById("id_navmethod").disabled = true;
                         document.getElementById("id_questionsperpage").value = 1;
                         document.getElementById("id_questionsperpage").disabled = true;
@@ -149,7 +159,7 @@ class quizaccess_quiztimer extends quiz_access_rule_base {
                         document.getElementById("id_timelimit_timeunit").selectedIndex = '. $timeunit . ';
                         document.getElementById("id_timelimit_timeunit").disabled = true;
                         document.getElementById("id_timelimit_enabled").disabled = true;
-                        document.getElementById("id_navmethod").value = "free";
+                        document.getElementById("id_navmethod").value = "sequential";
                         document.getElementById("id_navmethod").disabled = true;
                         document.getElementById("id_questionsperpage").value = 1;
                         document.getElementById("id_questionsperpage").disabled = true;
@@ -210,7 +220,7 @@ class quizaccess_quiztimer extends quiz_access_rule_base {
                         document.getElementById("id_timelimit_number").value = "";
                         document.getElementById("id_timelimit_timeunit").disabled = true;
                         document.getElementById("id_timelimit_enabled").disabled = true;
-                        document.getElementById("id_navmethod").value = "free";
+                        document.getElementById("id_navmethod").value = "sequential";
                         document.getElementById("id_navmethod").disabled = true;
                         document.getElementById("id_questionsperpage").value = 1;
                         document.getElementById("id_questionsperpage").disabled = true;
@@ -223,7 +233,7 @@ class quizaccess_quiztimer extends quiz_access_rule_base {
                         document.getElementById("id_timelimit_number").value = "";
                         document.getElementById("id_timelimit_timeunit").disabled = true;
                         document.getElementById("id_timelimit_enabled").disabled = true;
-                        document.getElementById("id_navmethod").value = "free";
+                        document.getElementById("id_navmethod").value = "sequential";
                         document.getElementById("id_navmethod").disabled = true;
                         document.getElementById("id_questionsperpage").value = 1;
                         document.getElementById("id_questionsperpage").disabled = true;
@@ -375,7 +385,7 @@ function updatequiznavmethod($quizid, $optionnavigation) {
         $data = new stdClass;
         $data->id = $quizid;
 
-        if ($optionnavigation == 3) {
+        if ($optionnavigation > 1) {
             $data->navmethod = 'sequential';
             $DB->update_record('quiz', $data);
         } else {

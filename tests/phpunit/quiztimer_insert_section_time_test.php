@@ -46,21 +46,46 @@ class quiztimer_insert_section_time_test extends \advanced_testcase {
 
     // Write the tests here as public funcions.
     // Please refer to {@link https://docs.moodle.org/dev/PHPUnit} for more details on PHPUnit tests in Moodle.
+    
+    /**
+     * @var \stdClass
+     */
     private static $course;
-    private static $context;
+
+    /**
+     * @var \stdClass
+     */
     private static $coursecontext;
+    
+    /**
+     * @var \stdClass
+     */
     private static $user;
 
+    /**
+     * @var int
+     */
     private static $reviewattempt;
+    
+    /**
+     * @var int
+     */
     private static $timeclose;
-    private static $attempts;
 
-    private static $cm;
+    /**
+     * @var \stdClass
+     */
     private static $quiz;
+
+    /**
+     * Course start.
+     */
     private const COURSE_START = 1706009000;
+
+    /**
+     * Course end.
+     */
     private const COURSE_END = 1906009000;
-    private const CM_DATESTART = 1706009000;
-    private const CM_DATEEND = 1906009000;
     public function setUp(): void {
         global $USER;
         parent::setUp();

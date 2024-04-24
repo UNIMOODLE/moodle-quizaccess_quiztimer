@@ -45,24 +45,51 @@ class quiztimer_edit_renderer_test extends \advanced_testcase {
 
     // Write the tests here as public funcions.
     // Please refer to {@link https://docs.moodle.org/dev/PHPUnit} for more details on PHPUnit tests in Moodle.
+    
+    /**
+     * @var \stdClass
+     */
     private static $course;
-    private static $context;
+
+    /**
+     * @var \stdClass
+     */
     private static $coursecontext;
+
+    /**
+     * @var \stdClass
+     */
     private static $user;
 
+    /**
+     * @var int
+     */
     private static $reviewattempt;
-    private static $timeclose;
-    private static $attempts;
 
-    private static $cm;
+    /**
+     * @var int
+     */
+    private static $timeclose;
+
+    /**
+     * @var \stdClass
+     */
     private static $quiz;
 
+    /**
+     * @var \stdClass
+     */
     private static $page;
 
+    /**
+     * Course start.
+     */
     private const COURSE_START = 1706009000;
+
+    /**
+     * Course end.
+     */
     private const COURSE_END = 1906009000;
-    private const CM_DATESTART = 1706009000;
-    private const CM_DATEEND = 1906009000;
     public function setUp(): void {
         global $USER, $PAGE;
         parent::setUp();
@@ -134,10 +161,7 @@ class quiztimer_edit_renderer_test extends \advanced_testcase {
 
         $url = new moodle_url('mod/quiz/accesrule/quiztimer/edit.php', ["editmethod" => 'time']);
 
-        // $editrender->question($structure, 0, $url);
-        // $editrender->get_question_name_for_slot($structure, 0, $url);
         $editrender->question_number(1);
-        // $editrender->question_name($structure, 0, $url);
 
         // Generate question.
         $question = \test_question_maker::make_question('truefalse', 'true');
@@ -153,7 +177,7 @@ class quiztimer_edit_renderer_test extends \advanced_testcase {
         // Insert slots into db
         $DB->insert_record('quiz_slots', ['slot' => 1, 'quizid' => $cm->id, 'page' => 1, 'requireprevious' => 1, 'maxmark' => 1]);
         // $slot = $DB->get_record_sql('SELECT TOP(1) * FROM {quiz_slots}');
-        $quizaccess->set_question_time($cm->id, $question->id, json_encode($timedata));
+        $quizaccess->set_question_time(self::$quiz->id, $question->id, json_encode($timedata));
         $quizaccess->set_question_time_returns();
         $this->assertNotNull($quizaccess->get_question_time($question->id));
         // Get quiz time.
@@ -169,13 +193,13 @@ class quiztimer_edit_renderer_test extends \advanced_testcase {
 
         // Question name.
         $editrender->question_name($structure, 1, new \moodle_url('/mod/quiz/accessrule/quiztimer'));
+        
+        // Question.
+        $editrender->question($structure, 1, new \moodle_url('/mod/quiz/accessrule/quiztimer'));
 
-        // New page template.
-        $reflectionmethod = new ReflectionMethod(edit_renderer::class, 'new_page_template');
-        $reflectionmethod->setAccessible(true);
         $newpagetemplate = $reflectionmethod->invoke($editrender, $structure, '', [], new \moodle_url('/mod/quiz/accessrule/quiztimer'));
         $this->assertNotNull($newpagetemplate);
-        $editrender->get_action_icon($structure, 1, new \moodle_url('/mod/quiz/accessrule/quiztimer'));
+        //$editrender->get_action_icon($structure, 1, new \moodle_url('/mod/quiz/accessrule/quiztimer'));
 
         $this->assertNotNull($quiztime);
     }

@@ -6,6 +6,7 @@
 - quiztimer_get_quiz_time_test.php          Obtiene el tiempo disponible del quiz por section, pregunta...[DONE]
 - quiztimer_get_quiz_time_total_test.php    Obtiene el tiempo adjudicado al quiz en segundos[DONE]
 - quiztimer_complete_attempt_set_time_question_test     Simulación completa de creación, aplicación de timer e intento de quiz [DONE]
-- quiztimer_set_nav_quiz_mode_test          Cambia el modo del navegador en el quiz [FIX]
+- quiztimer_set_nav_quiz_mode_test          Cambia el modo del navegador en el quiz [DONE]
+- quiztimer_events_test                     Comprueba los eventos [DONE]
 
-## Coverage: ~45%
+## Coverage: >60%

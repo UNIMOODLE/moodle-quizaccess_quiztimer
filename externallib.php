@@ -431,6 +431,12 @@ class quizaccess_quiztimer_external extends external_api {
         $DB->set_field('quizaccess_quiztimer', 'quiz_mode', $quizoption, ['quiz' => $quizid]);
         if ($timetype !== null) {
             quiz_repaginate_questions($quizid, $timetype);
+
+            $quiznav = $DB->get_field('quiz', 'navmethod', ['id' => $quizid], IGNORE_MISSING);
+            $quiznav != QUIZ_NAVMETHOD_SEQ ? $navmethod = QUIZ_NAVMETHOD_SEQ : $navmethod = false;
+            if ($navmethod) {
+                $DB->set_field('quiz', 'navmethod', $navmethod, ['id' => $quizid]);
+            }
         }
         return json_encode($timetype);
     }
@@ -486,6 +492,7 @@ class quizaccess_quiztimer_external extends external_api {
                     $quiztime->time += $timevalue->timevalue;
                 }
             }
+            $totalquiztime = array_sum(array_column($sections, 'timevalue'));
         } else {
             $slots = $DB->get_records('quizaccess_timedslots', $param, 'slot, timeunit, timevalue');
             $activeslots = $DB->get_records('quiz_slots', $param, 'id');
@@ -495,6 +502,10 @@ class quizaccess_quiztimer_external extends external_api {
             foreach ($slots as $slot) {
                 $quiztime->time += $slot->timevalue;
             }
+            $totalquiztime = array_sum(array_column($slots, 'timevalue'));
+        }
+        if ($DB->get_field('quiz', 'timelimit', ['id' => $quizid], IGNORE_MISSING) != $totalquiztime) {
+            $DB->set_field('quiz', 'timelimit', $totalquiztime, ['id' => $quizid]);
         }
         return json_encode($quiztime);
     }

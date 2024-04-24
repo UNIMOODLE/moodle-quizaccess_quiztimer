@@ -45,21 +45,46 @@ class quiztimer_get_quiz_time_test extends \advanced_testcase {
 
     // Write the tests here as public funcions.
     // Please refer to {@link https://docs.moodle.org/dev/PHPUnit} for more details on PHPUnit tests in Moodle.
+    
+    /**
+     * @var \stdClass
+     */
     private static $course;
-    private static $context;
+
+    /**
+     * @var \stdClass
+     */
     private static $coursecontext;
+
+    /**
+     * @var \stdClass
+     */
     private static $user;
 
+    /**
+     * @var int
+     */
     private static $reviewattempt;
-    private static $timeclose;
-    private static $attempts;
 
-    private static $cm;
+    /**
+     * @var int
+     */
+    private static $timeclose;
+
+    /**
+     * @var \stdClass
+     */
     private static $quiz;
+
+    /**
+     * Course start.
+     */
     private const COURSE_START = 1706009000;
+
+    /**
+     * Course end.
+     */
     private const COURSE_END = 1906009000;
-    private const CM_DATESTART = 1706009000;
-    private const CM_DATEEND = 1906009000;
     public function setUp(): void {
         global $USER;
         parent::setUp();
@@ -117,7 +142,7 @@ class quiztimer_get_quiz_time_test extends \advanced_testcase {
 
         // Insert slots into db.
         $DB->insert_record('quiz_slots', ['slot' => 1, 'quizid' => $cm->id, 'page' => 1, 'requireprevious' => 1, 'maxmark' => 1]);
-        $quizaccess->set_question_time($cm->id, $question->id, json_encode($timedata));
+        $quizaccess->set_question_time(self::$quiz->id, $question->id, json_encode($timedata));
 
         $this->assertNotNull($quizaccess->get_question_time($question->id));
         $quizaccess->get_question_time_returns();

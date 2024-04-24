@@ -440,9 +440,9 @@ class edit_renderer extends \plugin_renderer_base {
 
 
     /**
-     * Generate the function comment for the given function body in a markdown code block with the correct language syntax.
+     * Returns a message if the quiz has attemps, warning the user about not being able to modify quiz times or mode.
      *
-     * @param datatype $quizobj description
+     * @param datatype $quizobj quiz object
      * @return array
      */
     public function get_edittimes_page_warnings($quizobj) {

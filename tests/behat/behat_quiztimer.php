@@ -94,4 +94,12 @@ class behat_quiztimer extends behat_base {
             }
         }
     }
+
+    /**
+     * @Given /^I confirm the repaginate warning dialog$/
+     *
+     */
+    public function i_confirm_the_repaginate_warning_dialog() {
+        $this->getSession()->getDriver()->executeScript('window.confirm = function () { return true; };');
+    }
 }
