@@ -15,8 +15,10 @@ define(function(require, exports, module) {
 
        //Disable original timer
        var divElement = document.getElementById("quiz-timer");
+       if (divElement) {
        divElement.disabled = true;
        divElement.innerHTML = "Timer disabled";
+        }
 
        var quizTimerWrapper = document.getElementById("quiz-timer-wrapper");
        if (quizTimerWrapper.style.display === "flex") {
