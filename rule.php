@@ -53,9 +53,9 @@ class quizaccess_quiztimer extends quiz_access_rule_base {
     public static function add_settings_form_fields(mod_quiz_mod_form $quizform, MoodleQuickForm $mform): void {
         global $DB, $PAGE, $CFG;
 
-        $currentvalue = null;
         $quizid = $quizform->get_instance();
-        if (!isset($_GET['add']) || $_GET['add'] !== 'quiz') {
+        $add_param = optional_param('add', '', PARAM_ALPHA);
+        if ($add_param !== 'quiz') {
             $arrayofoptions = [
                 'limit' => get_string('timelimit', 'quizaccess_quiztimer'),
                 'section' => get_string('sectiontime', 'quizaccess_quiztimer'),
@@ -356,13 +356,16 @@ class quizaccess_quiztimer extends quiz_access_rule_base {
     }
 }
 
+$quizidparam = optional_param('quizid', null, PARAM_INT);
+$optionnavigationparam = optional_param('optionnavigation', null, PARAM_INT);
 
 if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
     // Check if the quizid and optionnavigation parameters are set in the POST request.
-    if (isset($_POST['quizid']) && isset($_POST['optionnavigation'])) {
+    if ($quizidparam !== null && $optionnavigationparam !== null) {
 
-        $quizid = $_POST['quizid'];
-        $optionnavigation = $_POST['optionnavigation'];
+        $quizid = $quizidparam;
+        $optionnavigation = $optionnavigationparam;
+
         // Call the updatequiznavmethod function with the retrieved parameters.
         updatequiznavmethod($quizid, $optionnavigation);
     }
@@ -454,12 +457,12 @@ function quizoptions($quizid, $optionnavigation) {
  * @return void
  */
 function show_timer_based_on_option($option) {
-
+    $attemptparam = optional_param('attempt', '', PARAM_INT);
     // OPTION 2 = SECTIONS.
     if ($option === 2) {
         // Timer inside the quiz
         // Check if the 'attempt' parameter is present in the URL.
-        if (isset($_GET['attempt'])) {
+        if ($attemptparam !== '') {
             global $DB, $quiz, $PAGE, $USER;
 
             $attemptid = required_param('attempt', PARAM_INT);
@@ -473,6 +476,7 @@ function show_timer_based_on_option($option) {
             $params = ['quizid' => $quizid];
             $quiz = $DB->get_records_sql($sql, $params);
             $totalquiztime = array_sum(array_column($quiz, 'timevalue'));
+            $originalTime = $totalquiztime;
 
             $quizoverride = false;
 
@@ -492,12 +496,10 @@ function show_timer_based_on_option($option) {
 
             $tiempos = array_column($quiz, 'timevalue');
             $tiempos = array_map('intval', $tiempos);
-            $sumatorio = array_sum($tiempos);
 
-            $existingdata = $DB->get_records('quiz');
             $data = new stdClass;
             $data->id = $id;
-
+            $data->timelimit = 0;
             $data->questionsperpage = 0;
             if ($DB !== null) {
                 $DB->update_record('quiz', $data);
@@ -518,6 +520,11 @@ function show_timer_based_on_option($option) {
                     $PAGE->requires->js_call_amd('quizaccess_quiztimer/section', 'init', [$data]);
 
                 }
+            }else{
+                $data = new stdClass;
+                $data->id = $id;
+                $data->timelimit = $originalTime;
+                $DB->update_record('quiz', $data);
             }
         }
     }
@@ -526,7 +533,7 @@ function show_timer_based_on_option($option) {
     if ($option === 3) {
         // Timer inside the quiz
         // Check if the 'attempt' parameter is present in the URL.
-        if (isset($_GET['attempt'])) {
+        if ($attemptparam !== '') {
             global $DB, $quiz, $PAGE, $USER;
 
             $attemptid = required_param('attempt', PARAM_INT);
@@ -539,6 +546,7 @@ function show_timer_based_on_option($option) {
             $quiz = $DB->get_records_sql($sql, $params);
             $quizoverride = false;
             $totalquiztime = array_sum(array_column($quiz, 'timevalue'));
+            $originalTime = $totalquiztime;
 
             if ($DB->get_record('quiz_overrides', ['quiz' => $quizid, 'userid' => $USER->id], 'timelimit', IGNORE_MISSING)) {
                 $quizoverride = $DB->get_record('quiz_overrides', ['quiz' => $quizid, 'userid' => $USER->id], 'timelimit', IGNORE_MISSING);
@@ -558,7 +566,7 @@ function show_timer_based_on_option($option) {
 
             $data = new stdClass;
             $data->id = $id;
-
+            $data->timelimit = 0;
             $data->questionsperpage = 1;
             if ($DB !== null) {
                 $DB->update_record('quiz', $data);
@@ -579,6 +587,11 @@ function show_timer_based_on_option($option) {
                     $PAGE->requires->js_call_amd('quizaccess_quiztimer/question', 'init', [$data]);
 
                 }
+            }else{
+                $data = new stdClass;
+                $data->id = $id;
+                $data->timelimit = $originalTime;
+                $DB->update_record('quiz', $data);
             }
         }
     }
@@ -587,7 +600,7 @@ function show_timer_based_on_option($option) {
     if ($option === 4) {
         // Timer inside the quiz
         // Check if the 'attempt' parameter is present in the URL.
-        if (isset($_GET['attempt'])) {
+        if ($attemptparam !== '') {
             global $DB, $quiz, $PAGE, $USER;
 
             $attemptid = required_param('attempt', PARAM_INT);
@@ -647,6 +660,7 @@ function show_timer_based_on_option($option) {
 
             $quizoverride = false;
             $totalquiztime = array_sum($tiempos);
+            $originalTime = $totalquiztime;
 
             if ($DB->get_record('quiz_overrides', ['quiz' => $quizid, 'userid' => $USER->id], 'timelimit', IGNORE_MISSING)) {
                 $quizoverride = $DB->get_record('quiz_overrides', ['quiz' => $quizid, 'userid' => $USER->id], 'timelimit', IGNORE_MISSING);
@@ -662,6 +676,13 @@ function show_timer_based_on_option($option) {
                 }
             }
 
+            $data = new stdClass;
+            $data->id = $id;
+            $data->timelimit = 0;
+            if ($DB !== null) {
+                $DB->update_record('quiz', $data);
+            }
+
             if (!(basename($_SERVER['PHP_SELF']) == 'summary.php' || basename($_SERVER['PHP_SELF']) == 'review.php')) {
                 // Get the current attempt instance.
 
@@ -675,6 +696,11 @@ function show_timer_based_on_option($option) {
                     $PAGE->requires->js_call_amd('quizaccess_quiztimer/page', 'init', [$data]);
 
                 }
+            }else{
+                $data = new stdClass;
+                $data->id = $id;
+                $data->timelimit = $originalTime;
+                $DB->update_record('quiz', $data);
             }
         }
     }
@@ -699,7 +725,8 @@ function show_timer_based_on_option($option) {
  */
 function get_quizoptions() {
     global $DB, $quiz;
-    if (isset($_GET['attempt'])) {
+    $attemptparam = optional_param('attempt', '', PARAM_INT);
+    if ($attemptparam !== '') {
 
         $attemptid = required_param('attempt', PARAM_INT);
         $attempt = quiz_attempt::create($attemptid);

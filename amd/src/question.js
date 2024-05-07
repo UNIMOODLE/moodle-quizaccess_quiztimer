@@ -14,6 +14,7 @@ define(function(require, exports, module) {
             "#1d2125", "#1d2125", "#1d2125", "#1d2125", "#1d2125", "#1d2125"];
 
         //Disable original timer
+
         var divElement = document.getElementById("quiz-timer");
         if (divElement) {
             divElement.disabled = true;
@@ -91,7 +92,7 @@ define(function(require, exports, module) {
 
                 var hours = Math.floor(timeRemaining / 3600);
                 var minutes = Math.floor((timeRemaining % 3600) / 60);
-                var seconds = timeRemaining % 60;
+                var seconds = Math.floor(timeRemaining % 60);
 
                 var formattedTime = hours.toString().padStart(2, "0") + ":" +
                                     minutes.toString().padStart(2, "0") + ":" +

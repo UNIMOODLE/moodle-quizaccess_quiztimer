@@ -42,8 +42,9 @@ define(function(require, exports, module) {
        quiztimercountdown.style.marginLeft = "auto";
 
        var existingDiv = document.querySelector('.container-fluid.tertiary-navigation');
-       existingDiv.parentNode.insertBefore(quiztimercountdown, existingDiv.nextSibling);
-
+       if (existingDiv) {
+         existingDiv.parentNode.insertBefore(quiztimercountdown, existingDiv.nextSibling);
+        }
        var headingElement = document.querySelectorAll(".container-fluid.tertiary-navigation");
 
        /**
@@ -58,31 +59,15 @@ define(function(require, exports, module) {
                var currentTime = Math.floor(Date.now() / 1000);
                var timeRemaining =  (endTime - 1) - currentTime;
 
-               function getColorBackgroundByPercentage(percentage) {
 
-                   var index = percentage / 10;
-
-                   // Devolver el color correspondiente
-                   return backgroundColors[index];
-               }
-               function getColorTextByPercentage(percentage) {
-                   var index = percentage / 10;
-
-                   // Devolver el color correspondiente
-                   return textColors[index];
-               }
-
-
-               // Calcular el porcentaje actual en relación con la duración total
                var totalDuration = endTime - (endTime - 1);
                var currentPercentage = (timeRemaining / totalDuration) * 10;
-               countdownElement.style.backgroundColor = getColorBackgroundByPercentage(currentPercentage);
-               countdownElement.style.color = getColorTextByPercentage(currentPercentage);
+               var index = Math.round(currentPercentage);
 
+               countdownElement.style.backgroundColor = backgroundColors[index];
+               countdownElement.style.color = textColors[index];
 
-
-
-               if (timeRemaining <= -1 ) {
+               if (timeRemaining <= -0 ) {
                    clearInterval(countdownInterval);
                    var button = document.getElementById("mod_quiz-next-nav");
                    localStorage.setItem("countdown" + pageID, 0);
@@ -99,11 +84,11 @@ define(function(require, exports, module) {
                    }
                }
 
+
                // Function to save the countdown time before leaving the page
                function saveCountdownTime() {
-                   var countdownElement = document.getElementById("countdown" + pageID);
                    localStorage.setItem("countdown" + pageID, timeRemaining);
-                   localStorage.setItem("attempt",  JSON.stringify(attemptid));
+                   localStorage.setItem("attempt",  attemptid);
                }
 
                // Attach the saveCountdownTime function to the beforeunload event
@@ -111,7 +96,7 @@ define(function(require, exports, module) {
 
                var hours = Math.floor(timeRemaining / 3600);
                var minutes = Math.floor((timeRemaining % 3600) / 60);
-               var seconds = timeRemaining % 60;
+               var seconds = Math.floor(timeRemaining % 60);
 
                var formattedTime = hours.toString().padStart(2, "0") + ":" +
                                    minutes.toString().padStart(2, "0") + ":" +
@@ -139,7 +124,7 @@ define(function(require, exports, module) {
 
 
        // Start the countdown timer.
-       updateCountdownTimer(endTime + 1,5);
+       updateCountdownTimer(endTime + 1, 5);
 
        // Insert countdown elements after the respective heading elements.
        headingElement.forEach(function(headingElement, index) {
