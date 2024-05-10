@@ -45,7 +45,7 @@ class quiz_options {
      * @param int $quizid
      * @return string
      */
-    public function get_quiz_option($quizid) : string {
+    public function get_quiz_option($quizid): string {
         global $CFG, $DB, $USER;
 
         $option = $DB->get_record('quizaccess_quiztimer', ['quiz' => $quizid]);

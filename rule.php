@@ -54,8 +54,8 @@ class quizaccess_quiztimer extends quiz_access_rule_base {
         global $DB, $PAGE, $CFG;
 
         $quizid = $quizform->get_instance();
-        $add_param = optional_param('add', '', PARAM_ALPHA);
-        if ($add_param !== 'quiz') {
+        $addparam = optional_param('add', '', PARAM_ALPHA);
+        if ($addparam !== 'quiz') {
             $arrayofoptions = [
                 'limit' => get_string('timelimit', 'quizaccess_quiztimer'),
                 'section' => get_string('sectiontime', 'quizaccess_quiztimer'),
@@ -68,7 +68,7 @@ class quizaccess_quiztimer extends quiz_access_rule_base {
             $arrayofoptions, ['onchange' => 'updateQuizSettingsOnChange();']);
             $mform->insertElementBefore($element, 'overduehandling');
             $mform->addHelpButton('timequestion', 'subtimes', 'quizaccess_quiztimer');
-        }else{
+        } else {
             $arrayofoptions = [
                 'limit' => get_string('timelimit', 'quizaccess_quiztimer'),
                 'section' => get_string('sectiontime', 'quizaccess_quiztimer'),
@@ -243,9 +243,6 @@ class quizaccess_quiztimer extends quiz_access_rule_base {
                 }
             </script>'
         );
-
-
-
     }
 
     /**
@@ -476,20 +473,22 @@ function show_timer_based_on_option($option) {
             $params = ['quizid' => $quizid];
             $quiz = $DB->get_records_sql($sql, $params);
             $totalquiztime = array_sum(array_column($quiz, 'timevalue'));
-            $originalTime = $totalquiztime;
+            $originaltime = $totalquiztime;
 
             $quizoverride = false;
 
             if ($DB->get_record('quiz_overrides', ['quiz' => $quizid, 'userid' => $USER->id], 'timelimit', IGNORE_MISSING)) {
-                $quizoverride = $DB->get_record('quiz_overrides', ['quiz' => $quizid, 'userid' => $USER->id], 'timelimit', IGNORE_MISSING);
+                $quizoverride = $DB->get_record('quiz_overrides',
+                ['quiz' => $quizid, 'userid' => $USER->id], 'timelimit', IGNORE_MISSING);
             } else {
                 $cm = $attempt->get_cm();
                 $currentgroupid = groups_get_activity_group($cm);
-                $quizoverride = $DB->get_record('quiz_overrides', ['quiz' => $quizid, 'groupid' => $currentgroupid], 'timelimit', IGNORE_MISSING);
+                $quizoverride = $DB->get_record('quiz_overrides',
+                ['quiz' => $quizid, 'groupid' => $currentgroupid], 'timelimit', IGNORE_MISSING);
             }
             if ($quizoverride) {
                 $timefraction = $quizoverride->timelimit / $totalquiztime;
-                foreach($quiz as $quizdata) {
+                foreach ($quiz as $quizdata) {
                     $quizdata->timevalue = round($quizdata->timevalue * $timefraction, 0);
                 }
             }
@@ -520,10 +519,10 @@ function show_timer_based_on_option($option) {
                     $PAGE->requires->js_call_amd('quizaccess_quiztimer/section', 'init', [$data]);
 
                 }
-            }else{
+            } else {
                 $data = new stdClass;
                 $data->id = $id;
-                $data->timelimit = $originalTime;
+                $data->timelimit = $originaltime;
                 $DB->update_record('quiz', $data);
             }
         }
@@ -546,18 +545,20 @@ function show_timer_based_on_option($option) {
             $quiz = $DB->get_records_sql($sql, $params);
             $quizoverride = false;
             $totalquiztime = array_sum(array_column($quiz, 'timevalue'));
-            $originalTime = $totalquiztime;
+            $originaltime = $totalquiztime;
 
             if ($DB->get_record('quiz_overrides', ['quiz' => $quizid, 'userid' => $USER->id], 'timelimit', IGNORE_MISSING)) {
-                $quizoverride = $DB->get_record('quiz_overrides', ['quiz' => $quizid, 'userid' => $USER->id], 'timelimit', IGNORE_MISSING);
+                $quizoverride = $DB->get_record('quiz_overrides',
+                ['quiz' => $quizid, 'userid' => $USER->id], 'timelimit', IGNORE_MISSING);
             } else {
                 $cm = $attempt->get_cm();
                 $currentgroupid = groups_get_activity_group($cm);
-                $quizoverride = $DB->get_record('quiz_overrides', ['quiz' => $quizid, 'groupid' => $currentgroupid], 'timelimit', IGNORE_MISSING);
+                $quizoverride = $DB->get_record('quiz_overrides',
+                ['quiz' => $quizid, 'groupid' => $currentgroupid], 'timelimit', IGNORE_MISSING);
             }
             if ($quizoverride) {
                 $timefraction = $quizoverride->timelimit / $totalquiztime;
-                foreach($quiz as $quizdata) {
+                foreach ($quiz as $quizdata) {
                     $quizdata->timevalue = round($quizdata->timevalue * $timefraction, 0);
                 }
             }
@@ -587,10 +588,10 @@ function show_timer_based_on_option($option) {
                     $PAGE->requires->js_call_amd('quizaccess_quiztimer/question', 'init', [$data]);
 
                 }
-            }else{
+            } else {
                 $data = new stdClass;
                 $data->id = $id;
-                $data->timelimit = $originalTime;
+                $data->timelimit = $originaltime;
                 $DB->update_record('quiz', $data);
             }
         }
@@ -660,18 +661,20 @@ function show_timer_based_on_option($option) {
 
             $quizoverride = false;
             $totalquiztime = array_sum($tiempos);
-            $originalTime = $totalquiztime;
+            $originaltime = $totalquiztime;
 
             if ($DB->get_record('quiz_overrides', ['quiz' => $quizid, 'userid' => $USER->id], 'timelimit', IGNORE_MISSING)) {
-                $quizoverride = $DB->get_record('quiz_overrides', ['quiz' => $quizid, 'userid' => $USER->id], 'timelimit', IGNORE_MISSING);
+                $quizoverride = $DB->get_record('quiz_overrides',
+                ['quiz' => $quizid, 'userid' => $USER->id], 'timelimit', IGNORE_MISSING);
             } else {
                 $cm = $attempt->get_cm();
                 $currentgroupid = groups_get_activity_group($cm);
-                $quizoverride = $DB->get_record('quiz_overrides', ['quiz' => $quizid, 'groupid' => $currentgroupid], 'timelimit', IGNORE_MISSING);
+                $quizoverride = $DB->get_record('quiz_overrides',
+                ['quiz' => $quizid, 'groupid' => $currentgroupid], 'timelimit', IGNORE_MISSING);
             }
             if ($quizoverride) {
                 $timefraction = $quizoverride->timelimit / $totalquiztime;
-                foreach($tiempos as $key => $value) {
+                foreach ($tiempos as $key => $value) {
                     $tiempos[$key] = round($value * $timefraction, 0);
                 }
             }
@@ -696,10 +699,10 @@ function show_timer_based_on_option($option) {
                     $PAGE->requires->js_call_amd('quizaccess_quiztimer/page', 'init', [$data]);
 
                 }
-            }else{
+            } else {
                 $data = new stdClass;
                 $data->id = $id;
-                $data->timelimit = $originalTime;
+                $data->timelimit = $originaltime;
                 $DB->update_record('quiz', $data);
             }
         }

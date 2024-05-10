@@ -51,7 +51,7 @@ class sections_settings extends persistent {
          *
          * @return array
          */
-    protected static function define_properties() : array {
+    protected static function define_properties(): array {
         return [
             'quizid' => [
                 'type' => PARAM_INT,
@@ -88,7 +88,7 @@ class sections_settings extends persistent {
      * @param int $quizid Quiz id.
      * @return string|null
      */
-    public static function get_config_by_quiz_id(int $quizid) : ?string {
+    public static function get_config_by_quiz_id(int $quizid): ?string {
         $config = self::get_config_cache()->get($quizid);
 
         if ($config !== false) {
@@ -110,7 +110,7 @@ class sections_settings extends persistent {
      * @param int $quizid The ID of the quiz.
      * @return int The ID of the section.
      */
-    protected static function get_sectionid(int $quizid) : int {
+    protected static function get_sectionid(int $quizid): int {
         global $DB;
         $sql = "SELECT DISTINCT qs.id
                   FROM {quiz_sections} qs

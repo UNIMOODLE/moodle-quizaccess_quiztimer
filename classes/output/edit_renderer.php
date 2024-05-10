@@ -305,7 +305,7 @@ class edit_renderer extends \plugin_renderer_base {
      * @param \moodle_url $pageurl the canonical URL of this page.
      * @return string HTML to output.
      */
-    public function get_question_name_for_slot(structure $structure, int $slot, \moodle_url $pageurl) : string {
+    public function get_question_name_for_slot(structure $structure, int $slot, \moodle_url $pageurl): string {
         // Display the link to the question (or do nothing if question has no url).
         if ($structure->get_question_type_for_slot($slot) === 'random') {
             $questionname = $this->random_question($structure, $slot, $pageurl);
@@ -376,7 +376,7 @@ class edit_renderer extends \plugin_renderer_base {
      * @param \moodle_url $pageurl the canonical URL of this page.
      * @return string HTML to output.
      */
-    public function get_action_icon(structure $structure, int $slot, \moodle_url $pageurl) : string {
+    public function get_action_icon(structure $structure, int $slot, \moodle_url $pageurl): string {
         // Action icons.
         $qtype = $structure->get_question_type_for_slot($slot);
         $questionicons = '';

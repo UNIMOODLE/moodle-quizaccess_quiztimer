@@ -52,7 +52,7 @@ class slots_settings extends persistent {
          *
          * @return array
          */
-    protected static function define_properties() : array {
+    protected static function define_properties(): array {
         return [
             'quizid' => [
                 'type' => PARAM_INT,
@@ -89,7 +89,7 @@ class slots_settings extends persistent {
      * @param int $quizid Quiz id.
      * @return string|null
      */
-    public static function get_config_by_quiz_id(int $quizid) : ?string {
+    public static function get_config_by_quiz_id(int $quizid): ?string {
         $config = self::get_config_cache()->get($quizid);
 
         if ($config !== false) {

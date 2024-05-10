@@ -48,7 +48,7 @@ class dateshelper {
      * @param mixed $timevalue The value corresponding to the time unit
      * @return string The time in seconds calculated based on the unit and value
      */
-    public static function get_quiz_time($timeunit, $timevalue) : string {
+    public static function get_quiz_time($timeunit, $timevalue): string {
         switch ($timeunit) {
             case 1:
                 $timeinseconds = $timevalue;
