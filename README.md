@@ -9,8 +9,11 @@ This Moodle plugin adds extra timing functionality to quizzes by allowing instru
 ## System Requirements ##
 Compatible with Moodle 4.1 and newer versions.
 
+## Screenshots ##
+![Captura desde 2024-11-05 12-03-55](https://github.com/user-attachments/assets/41d38c0d-19d2-4f84-aa41-ef7155a13de5)
 
 ## Installing manually ##
+
 
 The plugin can be also installed by putting the contents of this directory to
 
