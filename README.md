@@ -17,10 +17,9 @@ Compatible with Moodle 4.1 and newer versions.
 
 The plugin can be also installed by putting the contents of this directory to
 
-    {your/moodle/dirroot}/question/bank/quiztimer
+    {your/moodle/dirroot}/mod/quiz/accessrule/quiztimer
 
-Afterwards, log in to your Moodle site as an admin and go to _Site administration >
-Notifications_ to complete the installation.
+Afterwards, log in to your Moodle site as an admin and go to _Site administration to complete the installation.
 
 Alternatively, you can run
 
