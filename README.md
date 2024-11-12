@@ -1,13 +1,25 @@
-# Quiz Timer#
+# QuizAccess - Quiztimer #
+
+## Introduction
+This Moodle plugin adds extra timing functionality to quizzes by allowing instructors to assign specific time limits for each question, section, and page within the quiz. Unlike traditional settings that impose a single time limit for the entire quiz.
+
+[<img src="https://unimoodle.github.io/assets/images/unimoodle-primarylogo-rgb-1200x353.png" height="70px"/>](https://unimoodle.github.io)
+
+
+## System Requirements ##
+Compatible with Moodle 4.1 and newer versions.
+
+## Screenshots ##
+![Captura desde 2024-11-05 12-03-55](https://github.com/user-attachments/assets/41d38c0d-19d2-4f84-aa41-ef7155a13de5)
 
 ## Installing manually ##
+
 
 The plugin can be also installed by putting the contents of this directory to
 
     {your/moodle/dirroot}/mod/quiz/accessrule/quiztimer
 
-Afterwards, log in to your Moodle site as an admin and go to _Site administration >
-Notifications_ to complete the installation.
+Afterwards, log in to your Moodle site as an admin and go to _Site administration to complete the installation.
 
 Alternatively, you can run
 
