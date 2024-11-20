@@ -34,7 +34,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'quizaccess_quiztimer';
-$plugin->release = '0.9.0';
+$plugin->release = '1.0.0';
 $plugin->version = 2024032001;
 $plugin->requires = 2022041900;
 $plugin->maturity = MATURITY_ALPHA;

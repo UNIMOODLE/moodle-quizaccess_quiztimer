@@ -36,8 +36,8 @@ defined('MOODLE_INTERNAL') || die();
 $string['pluginname'] = 'Reglas de acceso de Quiztimer';
 
 
-$string['subtimes'] = 'Time limit to use';
-$string['subtimes_help'] = 'TEST TEST TEST TEST';
+$string['subtimes'] = 'Límite de tiempo para usar';
+$string['subtimes_help'] = 'El desplegable ofrece tres opciones para configurar el temporizador del cuestionario (Sección, Pregunta, Total)';
 
 // Other strings.
 $string['totaltime'] = 'Total Time';
@@ -89,3 +89,7 @@ $string['repaginatewarning'] = 'Al seleccionar métodos de edición por pregunta
 $string['pagingchangesnotapply'] = 'El quiz usa tiempos personalizados por secciones o preguntas, los cambies que realices a las paginas del quiz no se aplicarán y serán sobrescritos';
 $string['canteditquiztype'] = 'No puede editar el modo de tiempo del cuestionario porque ya ha sido respondido.';
 $string['disabledbycustomtimer'] = 'Fijo por el modo de tiempos del cuestionario en la seccion de temporalización. ';
+
+$string['configsavedsection'] = 'Configuración guardada correctamente. <br> <b>Recuerda cambiar los tiempos de las secciones.</b>';
+$string['configsavedquestion'] = 'Configuración guardada correctamente. <br> <b>Recuerda cambiar los tiempos de las preguntas.</b>';
+$string['configsavedpage'] = 'Configuración guardada correctamente. <br> <b>Recuerda cambiar los tiempos de las páginas.</b>';

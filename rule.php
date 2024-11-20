@@ -32,10 +32,10 @@
  */
 
 use core\navigation\views\view;
+use mod_quiz\local\access_rule_base;
 use quizaccess_quiztimer\helpers\dateshelper;
 
 defined('MOODLE_INTERNAL') || die();
-require_once($CFG->dirroot . '/mod/quiz/accessrule/accessrulebase.php');
 require_once($CFG->dirroot . '/mod/quiz/accessmanager.php');
 
 /**
@@ -243,6 +243,54 @@ class quizaccess_quiztimer extends quiz_access_rule_base {
                 }
             </script>'
         );
+    }
+
+    public static function save_settings($quiz) {
+        global $DB, $PAGE;
+        $addparam = optional_param('add', '', PARAM_ALPHA);
+
+        $timedsections = $DB->get_record('quizaccess_timedsections', ['quizid' => $quiz->id]);
+        $timedslots = $DB->get_record('quizaccess_timedslots', ['quizid' => $quiz->id]);
+
+        if ($addparam !== 'quiz') {
+            if (!$timedsections) {
+                if($quiz->timequestion == 'section') {
+
+                    $url = new moodle_url('/mod/quiz/accessrule/quiztimer/edit.php', [
+                        'cmid' => $PAGE->cm->id,
+                        'edittype' => 'section'
+                    ]);
+
+                    redirect($url, get_string('configsavedsection', 'quizaccess_quiztimer'), 3);
+                }
+
+                if($quiz->timequestion == 'page') {
+
+                    $url = new moodle_url('/mod/quiz/accessrule/quiztimer/edit.php', [
+                        'cmid' => $PAGE->cm->id,
+                        'edittype' => 'equitative'
+                    ]);
+
+                    redirect($url, get_string('configsavedpage', 'quizaccess_quiztimer'), 3);
+
+                }
+            }
+
+            if (!$timedslots) {
+                if($quiz->timequestion == 'question') {
+
+                    $url = new moodle_url('/mod/quiz/accessrule/quiztimer/edit.php', [
+                        'cmid' => $PAGE->cm->id,
+                        'edittype' => 'slots'
+                    ]);
+
+                    redirect($url, get_string('configsavedquestion', 'quizaccess_quiztimer'), 3);
+
+                }
+            }
+
+        }
+
     }
 
     /**

@@ -90,3 +90,7 @@ Do you still wish to continue with the operation?';
 $string['pagingchangesnotapply'] = 'This quiz has a custom timer selected using slots or sections times, your changes made to the questions pagination will not be applied, getting overwrited';
 $string['canteditquiztype'] = 'You cannot edit quiz times type because this quiz has been attempted.';
 $string['disabledbycustomtimer'] = 'Fixed because of the custom timer selected in timing section.';
+
+$string['configsavedsection'] = 'Configuration saved successfully. <br> <b>Remember to change the section times.</b>';
+$string['configsavedquestion'] = 'Configuration saved successfully. <br> <b>Remember to change the question times.</b>';
+$string['configsavedpage'] = 'Configuration saved successfully. <br> <b>Remember to change the page times.</b>';
