@@ -31,17 +31,16 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use core\navigation\views\view;
-use mod_quiz\local\access_rule_base;
-use quizaccess_quiztimer\helpers\dateshelper;
+
+use mod_quiz\quiz_settings;
+use mod_quiz\quiz_attempt;
 
 defined('MOODLE_INTERNAL') || die();
-require_once($CFG->dirroot . '/mod/quiz/accessmanager.php');
 
 /**
  * Class for inserting timers for questions and sections.
  */
-class quizaccess_quiztimer extends quiz_access_rule_base {
+class quizaccess_quiztimer extends \mod_quiz\local\access_rule_base {
 
 
     /**
@@ -249,8 +248,8 @@ class quizaccess_quiztimer extends quiz_access_rule_base {
         global $DB, $PAGE;
         $addparam = optional_param('add', '', PARAM_ALPHA);
 
-        $timedsections = $DB->get_record('quizaccess_timedsections', ['quizid' => $quiz->id]);
-        $timedslots = $DB->get_record('quizaccess_timedslots', ['quizid' => $quiz->id]);
+        $timedsections = $DB->get_records('quizaccess_timedsections', ['quizid' => $quiz->id]);
+        $timedslots = $DB->get_records('quizaccess_timedslots', ['quizid' => $quiz->id]);
 
         if ($addparam !== 'quiz') {
             if (!$timedsections) {
@@ -301,7 +300,7 @@ class quizaccess_quiztimer extends quiz_access_rule_base {
      * @param bool $canignoretimelimits Flag to indicate if time limits can be ignored
      * @return self|null A new instance of the class or null based on conditions
      */
-    public static function make(quiz $quizobj, $timenow, $canignoretimelimits) {
+    public static function make(quiz_settings $quizobj, $timenow, $canignoretimelimits) {
         global $DB;
         if (!empty($quizobj->get_quiz()->timelimit)) {
             $quizmode = $DB->get_field('quizaccess_quiztimer', 'quiz_mode', ['quiz' => $quizobj->get_quiz()->id]);
@@ -334,12 +333,12 @@ class quizaccess_quiztimer extends quiz_access_rule_base {
     /**
      * Adds preflight check form fields for the quiz module.
      *
-     * @param mod_quiz_preflight_check_form $quizform The quiz preflight check form object.
+     * @param mod_quiz\form\preflight_check_form $quizform The quiz preflight check form object.
      * @param MoodleQuickForm $mform The Moodle quick form object.
      * @param int $attemptid The ID of the quiz attempt.
      * @throws Exception If there is an error.
      */
-    public function add_preflight_check_form_fields(mod_quiz_preflight_check_form $quizform,
+    public function add_preflight_check_form_fields(mod_quiz\form\preflight_check_form $quizform,
             MoodleQuickForm $mform, $attemptid) {
         global $DB, $PAGE, $USER;
 

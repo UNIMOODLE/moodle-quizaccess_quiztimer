@@ -37,7 +37,7 @@ use mod_quiz\question\bank\qbank_helper;
 use mod_quiz\structure;
 use html_writer;
 use renderable;
-
+use mod_quiz\quiz_settings;
 /**
  * Renderer outputting the quiz editing UI.
  */
@@ -56,7 +56,7 @@ class edit_renderer extends \plugin_renderer_base {
      * @param array $pagevars the variables from {@see question_edit_setup()}.
      * @return string HTML to output.
      */
-    public function edit_page(\quiz $quizobj, structure $structure,
+    public function edit_page(quiz_settings $quizobj, structure $structure,
         \core_question\local\bank\question_edit_contexts $contexts, \moodle_url $pageurl, array $pagevars) {
         $output = '';
 
