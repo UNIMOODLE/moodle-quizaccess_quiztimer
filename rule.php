@@ -249,8 +249,8 @@ class quizaccess_quiztimer extends quiz_access_rule_base {
         global $DB, $PAGE;
         $addparam = optional_param('add', '', PARAM_ALPHA);
 
-        $timedsections = $DB->get_record('quizaccess_timedsections', ['quizid' => $quiz->id]);
-        $timedslots = $DB->get_record('quizaccess_timedslots', ['quizid' => $quiz->id]);
+        $timedsections = $DB->get_records('quizaccess_timedsections', ['quizid' => $quiz->id]);
+        $timedslots = $DB->get_records('quizaccess_timedslots', ['quizid' => $quiz->id]);
 
         if ($addparam !== 'quiz') {
             if (!$timedsections) {
