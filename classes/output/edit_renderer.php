@@ -33,15 +33,17 @@
 
 namespace quizaccess_quiztimer\output;
 
+use mod_quiz\output\edit_renderer as quiz_edit_renderer;
 use mod_quiz\question\bank\qbank_helper;
 use mod_quiz\structure;
+use mod_quiz\quiz_settings;
 use html_writer;
 use renderable;
 
 /**
  * Renderer outputting the quiz editing UI.
  */
-class edit_renderer extends \plugin_renderer_base {
+class edit_renderer extends quiz_edit_renderer {
 
     /** @var string The toggle group name of the checkboxes for the toggle-all functionality. */
     protected $togglegroup = 'quiz-questions';
@@ -56,14 +58,14 @@ class edit_renderer extends \plugin_renderer_base {
      * @param array $pagevars the variables from {@see question_edit_setup()}.
      * @return string HTML to output.
      */
-    public function edit_page(\quiz $quizobj, structure $structure,
+    public function edit_page(quiz_settings $quizobj, structure $structure,
         \core_question\local\bank\question_edit_contexts $contexts, \moodle_url $pageurl, array $pagevars) {
         $output = '';
 
         // Page title.
         $output .= $this->heading(get_string('questions', 'quiz'));
         // Top information.
-        $output .= $this->quiz_state_warnings($quizobj);
+        $output .= $this->quiz_edittimes_warnings($quizobj);
         $output .= $this->quiz_information($structure);
         // Show the questions organised into sections and pages.
         $output .= $this->start_section_list($structure);
@@ -79,14 +81,13 @@ class edit_renderer extends \plugin_renderer_base {
         return $output;
     }
 
-
     /**
      * Generate the function comment for the given function body in a markdown code block with the correct language syntax.
      *
      * @param datatype $quizobj description
      * @return Some_Return_Value
      */
-    public function quiz_state_warnings($quizobj) {
+    public function quiz_edittimes_warnings($quizobj) {
         $warnings = $this->get_edittimes_page_warnings($quizobj);
 
         if (empty($warnings)) {
@@ -98,44 +99,6 @@ class edit_renderer extends \plugin_renderer_base {
             $output[] = \html_writer::tag('p', $warning);
         }
         return $this->box(implode("\n", $output), 'statusdisplay');
-    }
-
-    /**
-     * Render the status bar.
-     *
-     * @param structure $structure the quiz structure.
-     * @return string HTML to output.
-     */
-    public function quiz_information(structure $structure) {
-        list($currentstatus, $explanation) = $structure->get_dates_summary();
-
-        $output = html_writer::span(
-                    get_string('numquestionsx', 'quiz', $structure->get_question_count()),
-                    'numberofquestions') . ' | ' .
-                html_writer::span($currentstatus, 'quizopeningstatus',
-                    ['title' => $explanation]);
-
-        return html_writer::div($output, 'statusbar');
-    }
-    /**
-     * Generate the starting container html for the start of a list of sections
-     * @param structure $structure the structure of the quiz being edited.
-     * @return string HTML to output.
-     */
-    protected function start_section_list(structure $structure) {
-        $class = 'slots';
-        if ($structure->get_section_count() == 1) {
-            $class .= ' only-one-section';
-        }
-        return html_writer::start_tag('ul', ['class' => $class, 'role' => 'presentation']);
-    }
-
-    /**
-     * Generate the closing container html for the end of a list of sections
-     * @return string HTML to output.
-     */
-    protected function end_section_list() {
-        return html_writer::end_tag('ul');
     }
 
     /**
@@ -184,41 +147,6 @@ class edit_renderer extends \plugin_renderer_base {
         $output .= html_writer::end_div($output, 'section-heading');
 
         return $output;
-    }
-
-    /**
-     * Display the end of a section, after the questions.
-     *
-     * @return string HTML to output.
-     */
-    protected function end_section() {
-        $output = html_writer::end_tag('div');
-        $output .= html_writer::end_tag('li');
-
-        return $output;
-    }
-
-
-    /**
-     * Renders HTML to display the questions in a section of the quiz.
-     *
-     * This function calls {@see core_course_renderer::quiz_section_question()}
-     *
-     * @param structure $structure object containing the structure of the quiz.
-     * @param \stdClass $section information about the section.
-     * @param \core_question\local\bank\question_edit_contexts $contexts the relevant question bank contexts.
-     * @param array $pagevars the variables from {@see \question_edit_setup()}.
-     * @param \moodle_url $pageurl the canonical URL of this page.
-     * @return string HTML to output.
-     */
-    public function questions_in_section(structure $structure, $section,
-            $contexts, $pagevars, $pageurl) {
-
-        $output = '';
-        foreach ($structure->get_slots_in_section($section->id) as $slot) {
-            $output .= $this->question_row($structure, $slot, $contexts, $pagevars, $pageurl);
-        }
-        return html_writer::tag('ul', $output, ['class' => 'section img-text']);
     }
 
     /**
@@ -284,9 +212,13 @@ class edit_renderer extends \plugin_renderer_base {
 
         $output = '';
         $output .= html_writer::start_tag('div');
+
+        $questionnumber = $structure->get_displayed_number_for_slot($slot);
+
         $data = [
             'slotid' => $slotid,
-            'questionnumber' => $this->question_number($structure->get_displayed_number_for_slot($slot)),
+            //'questionnumber' => $this->question_number_timer($structure->get_displayed_number_for_slot($slot)),
+            'questionnumber' => $this->question_number($questionnumber, $structure->get_slot_by_number($slot)->defaultnumber),
             'questionname' => $this->get_question_name_for_slot($structure, $slot, $pageurl),
         ];
         // Render the question slot template.
@@ -295,77 +227,6 @@ class edit_renderer extends \plugin_renderer_base {
         $output .= html_writer::end_tag('div');
 
         return $output;
-    }
-
-    /**
-     * Get the question name for the slot.
-     *
-     * @param structure $structure object containing the structure of the quiz.
-     * @param int $slot the slot on the page we are outputting.
-     * @param \moodle_url $pageurl the canonical URL of this page.
-     * @return string HTML to output.
-     */
-    public function get_question_name_for_slot(structure $structure, int $slot, \moodle_url $pageurl): string {
-        // Display the link to the question (or do nothing if question has no url).
-        if ($structure->get_question_type_for_slot($slot) === 'random') {
-            $questionname = $this->random_question($structure, $slot, $pageurl);
-        } else {
-            $questionname = $this->question_name($structure, $slot, $pageurl);
-        }
-
-        return $questionname;
-    }
-
-    /**
-     * Renders html to display a random question the link to edit the configuration
-     * and also to see that category in the question bank.
-     *
-     * @param structure $structure object containing the structure of the quiz.
-     * @param int $slotnumber which slot we are outputting.
-     * @param \moodle_url $pageurl the canonical URL of this page.
-     * @return string HTML to output.
-     */
-    public function random_question(structure $structure, $slotnumber, $pageurl) {
-        $question = $structure->get_question_in_slot($slotnumber);
-        $slot = $structure->get_slot_by_number($slotnumber);
-        $editurl = new \moodle_url('/mod/quiz/editrandom.php',
-                ['returnurl' => $pageurl->out_as_local_url(), 'slotid' => $slot->id]);
-
-        $temp = clone($question);
-        $temp->questiontext = '';
-        $temp->name = qbank_helper::describe_random_question($slot);
-        $instancename = quiz_question_tostring($temp);
-
-        $configuretitle = get_string('configurerandomquestion', 'quiz');
-        $qtype = \question_bank::get_qtype($question->qtype, false);
-        $namestr = $qtype->local_name();
-        $icon = $this->pix_icon('icon', $namestr, $qtype->plugin_name(), ['title' => $namestr,
-                'class' => 'icon activityicon', 'alt' => ' ', 'role' => 'presentation', ]);
-
-        $editicon = $this->pix_icon('t/edit', $configuretitle, 'moodle', ['title' => '']);
-        $qbankurlparams = [
-            'cmid' => $structure->get_cmid(),
-            'cat' => $slot->category . ',' . $slot->contextid,
-            'recurse' => $slot->randomrecurse,
-        ];
-
-        $slottags = [];
-        if (isset($slot->randomtags)) {
-            $slottags = $slot->randomtags;
-        }
-        foreach ($slottags as $index => $slottag) {
-            $slottag = explode(',', $slottag);
-            $qbankurlparams["qtagids[{$index}]"] = $slottag[0];
-        }
-
-        // If this is a random question, display a link to show the questions
-        // selected from in the question bank.
-        $qbankurl = new \moodle_url('/question/edit.php', $qbankurlparams);
-        $qbanklink = ' ' . \html_writer::link($qbankurl,
-                        get_string('seequestions', 'quiz'), ['class' => 'mod_quiz_random_qbank_link']);
-
-        return html_writer::link($editurl, $icon . $editicon, ['title' => $configuretitle]) .
-                ' ' . $instancename . ' ' . $qbanklink;
     }
 
     /**
@@ -398,7 +259,7 @@ class edit_renderer extends \plugin_renderer_base {
      * @param string $number The number, or 'i'.
      * @return string HTML to output.
      */
-    public function question_number($number) {
+    public function question_number_timer($number) {
         if (is_numeric($number)) {
             $number = html_writer::span(get_string('question'), 'accesshide') . ' ' . $number;
         }
@@ -420,9 +281,6 @@ class edit_renderer extends \plugin_renderer_base {
         $output = '';
 
         $question = $structure->get_question_in_slot($slot);
-        $editurl = new \moodle_url('/question/bank/editquestion/question.php', [
-                'returnurl' => $pageurl->out_as_local_url(),
-                'cmid' => $structure->get_cmid(), 'id' => $question->questionid, ]);
 
         $instancename = quiz_question_tostring($question);
 
@@ -430,7 +288,7 @@ class edit_renderer extends \plugin_renderer_base {
         $namestr = $qtype->local_name();
 
         $icon = $this->pix_icon('icon', $namestr, $qtype->plugin_name(), ['title' => $namestr,
-                'class' => 'activityicon', 'alt' => ' ', 'role' => 'presentation', ]);
+                'class' => 'activityicon', 'alt' => $namestr]);
 
         $activitylink = $icon . html_writer::tag('span', $instancename, ['class' => 'instancename']);
         $output .= $activitylink;
@@ -438,6 +296,38 @@ class edit_renderer extends \plugin_renderer_base {
         return $output;
     }
 
+    /**
+     * Renders html to display a random question the link to edit the configuration
+     * and also to see that category in the question bank.
+     *
+     * @param structure $structure object containing the structure of the quiz.
+     * @param int $slotnumber which slot we are outputting.
+     * @param \moodle_url $pageurl the canonical URL of this page.
+     * @return string HTML to output.
+     */
+    public function random_question(structure $structure, $slotnumber, $pageurl) {
+        $question = $structure->get_question_in_slot($slotnumber);
+        $slot = $structure->get_slot_by_number($slotnumber);
+
+        $temp = clone($question);
+        $temp->questiontext = '';
+        $temp->name = $structure->describe_random_slot($slot->id);
+        $instancename = quiz_question_tostring($temp);
+        if (strpos($instancename, structure::MISSING_QUESTION_CATEGORY_PLACEHOLDER) !== false) {
+            $label = html_writer::span(
+                get_string('missingcategory', 'mod_quiz'),
+                'badge bg-danger text-white h-50'
+            );
+            $instancename = str_replace(structure::MISSING_QUESTION_CATEGORY_PLACEHOLDER, $label, $instancename);
+        }
+
+        $configuretitle = get_string('configurerandomquestion', 'quiz');
+        $qtype = \question_bank::get_qtype($question->qtype, false);
+        $namestr = $qtype->local_name();
+        $icon = $this->pix_icon('icon', $namestr, $qtype->plugin_name(), ['class' => 'icon activityicon']);
+
+        return $icon . ' ' . $instancename;
+    }
 
     /**
      * Returns a message if the quiz has attemps, warning the user about not being able to modify quiz times or mode.

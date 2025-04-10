@@ -37,7 +37,6 @@
  require_once($CFG->libdir . '/tablelib.php');
  use quizaccess_quiztimer\quiz_options;
  require_once($CFG->dirroot . '/mod/quiz/locallib.php');
- require_once($CFG->dirroot . '/mod/quiz/addrandomform.php');
  require_once($CFG->dirroot . '/question/editlib.php');
 
 // These params are only passed from page request to request while we stay on
@@ -62,7 +61,7 @@ new moodle_url('/mod/quiz/accessrule/quiztimer/edit.php?cmid=' . $cmid));
 // Get the course object and related bits.
 $course = $DB->get_record('course', ['id' => $quiz->course], '*', MUST_EXIST);
 require_login($course);
-$quizobj = new quiz($quiz, $cm, $course);
+$quizobj = new \mod_quiz\quiz_settings($quiz, $cm, $course);
 
 $structure = $quizobj->get_structure();
 
@@ -90,10 +89,6 @@ $event = \mod_quiz\event\edit_page_viewed::create([
     ],
 ]);
 $event->trigger();
-
-// Get the question bank view.
-$questionbank = new mod_quiz\question\bank\custom_view($contexts, $thispageurl, $course, $cm, $quiz);
-$questionbank->set_quiz_has_attempts($quizhasattempts);
 
 // End of process commands =====================================================.
 
@@ -124,7 +119,8 @@ for ($pageiter = 1; $pageiter <= $numberoflisteners; $pageiter++) {
 }
 
 $PAGE->requires->data_for_js('quiz_edit_config', $quizeditconfig);
-$PAGE->requires->js('/question/qengine.js');
+$PAGE->requires->js_call_amd('core_question/question_engine');
+
 $edittype = optional_param('edittype', null, PARAM_TEXT);
 $quizopt = new quiz_options();
 if ($edittype === null) {

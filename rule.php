@@ -861,6 +861,7 @@ function get_preflight_errors() {
     }
 }
 
-
-
-echo show_timer_based_on_option(get_quizoptions());
+$quizmode = get_quizoptions();
+if($quizmode) {
+    echo show_timer_based_on_option($quizmode);
+}
