@@ -33,16 +33,17 @@
 
 use core\navigation\views\view;
 use mod_quiz\local\access_rule_base;
+use mod_quiz\form\preflight_check_form;
 use quizaccess_quiztimer\helpers\dateshelper;
 
+
 defined('MOODLE_INTERNAL') || die();
-require_once($CFG->dirroot . '/mod/quiz/accessmanager.php');
+//require_once($CFG->dirroot . '/mod/quiz/accessmanager.php');
 
 /**
  * Class for inserting timers for questions and sections.
  */
 class quizaccess_quiztimer extends quiz_access_rule_base {
-
 
     /**
      * Generate the form fields for adding quiz settings.
@@ -334,12 +335,12 @@ class quizaccess_quiztimer extends quiz_access_rule_base {
     /**
      * Adds preflight check form fields for the quiz module.
      *
-     * @param mod_quiz_preflight_check_form $quizform The quiz preflight check form object.
+     * @param preflight_check_form $quizform The quiz preflight check form object.
      * @param MoodleQuickForm $mform The Moodle quick form object.
      * @param int $attemptid The ID of the quiz attempt.
      * @throws Exception If there is an error.
      */
-    public function add_preflight_check_form_fields(mod_quiz_preflight_check_form $quizform,
+    public function add_preflight_check_form_fields(preflight_check_form $quizform,
             MoodleQuickForm $mform, $attemptid) {
         global $DB, $PAGE, $USER;
 
@@ -511,7 +512,7 @@ function show_timer_based_on_option($option) {
             global $DB, $quiz, $PAGE, $USER;
 
             $attemptid = required_param('attempt', PARAM_INT);
-            $attempt = quiz_attempt::create($attemptid);
+            $attempt = \mod_quiz\quiz_attempt::create($attemptid);
             $quizid = $attempt->get_quiz();
             $id = $quizid->id;
 
@@ -584,7 +585,7 @@ function show_timer_based_on_option($option) {
             global $DB, $quiz, $PAGE, $USER;
 
             $attemptid = required_param('attempt', PARAM_INT);
-            $attempt = quiz_attempt::create($attemptid);
+            $attempt = \mod_quiz\quiz_attempt::create($attemptid);
             $quizid = $attempt->get_quiz();
             $id = $quizid->id;
             $quizid = $id;
@@ -653,7 +654,7 @@ function show_timer_based_on_option($option) {
             global $DB, $quiz, $PAGE, $USER;
 
             $attemptid = required_param('attempt', PARAM_INT);
-            $attempt = quiz_attempt::create($attemptid);
+            $attempt = \mod_quiz\quiz_attempt::create($attemptid);
             $quizid = $attempt->get_quiz();
             $id = $quizid->id;
 
@@ -780,7 +781,7 @@ function get_quizoptions() {
     if ($attemptparam !== '') {
 
         $attemptid = required_param('attempt', PARAM_INT);
-        $attempt = quiz_attempt::create($attemptid);
+        $attempt = \mod_quiz\quiz_attempt::create($attemptid);
         $quizid = $attempt->get_quiz();
         $id = $quizid->id;
         $quizid = $id;

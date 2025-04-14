@@ -36,7 +36,7 @@ use quizaccess_quiztimer\quiz_options;
 /**
  * Hook to add the times edit form
  */
-function quizaccess_quiztimer_before_standard_html_head() {
+function xxxquizaccess_quiztimer_before_standard_html_head() {
     global $CFG, $PAGE, $DB, $USER;
 
     if ($PAGE->pagetype == "mod-quiz-edit" && has_capability('quizaccess/quiztimer:manage',
