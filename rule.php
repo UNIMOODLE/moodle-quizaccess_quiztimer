@@ -31,19 +31,17 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use core\navigation\views\view;
-use mod_quiz\local\access_rule_base;
-use mod_quiz\form\preflight_check_form;
-use quizaccess_quiztimer\helpers\dateshelper;
 
+use mod_quiz\quiz_settings;
+use mod_quiz\quiz_attempt;
 
 defined('MOODLE_INTERNAL') || die();
-//require_once($CFG->dirroot . '/mod/quiz/accessmanager.php');
 
 /**
  * Class for inserting timers for questions and sections.
  */
-class quizaccess_quiztimer extends quiz_access_rule_base {
+class quizaccess_quiztimer extends \mod_quiz\local\access_rule_base {
+
 
     /**
      * Generate the form fields for adding quiz settings.
@@ -246,54 +244,6 @@ class quizaccess_quiztimer extends quiz_access_rule_base {
         );
     }
 
-    public static function save_settings($quiz) {
-        global $DB, $PAGE;
-        $addparam = optional_param('add', '', PARAM_ALPHA);
-
-        $timedsections = $DB->get_record('quizaccess_timedsections', ['quizid' => $quiz->id]);
-        $timedslots = $DB->get_record('quizaccess_timedslots', ['quizid' => $quiz->id]);
-
-        if ($addparam !== 'quiz') {
-            if (!$timedsections) {
-                if($quiz->timequestion == 'section') {
-
-                    $url = new moodle_url('/mod/quiz/accessrule/quiztimer/edit.php', [
-                        'cmid' => $PAGE->cm->id,
-                        'edittype' => 'section'
-                    ]);
-
-                    redirect($url, get_string('configsavedsection', 'quizaccess_quiztimer'), 3);
-                }
-
-                if($quiz->timequestion == 'page') {
-
-                    $url = new moodle_url('/mod/quiz/accessrule/quiztimer/edit.php', [
-                        'cmid' => $PAGE->cm->id,
-                        'edittype' => 'equitative'
-                    ]);
-
-                    redirect($url, get_string('configsavedpage', 'quizaccess_quiztimer'), 3);
-
-                }
-            }
-
-            if (!$timedslots) {
-                if($quiz->timequestion == 'question') {
-
-                    $url = new moodle_url('/mod/quiz/accessrule/quiztimer/edit.php', [
-                        'cmid' => $PAGE->cm->id,
-                        'edittype' => 'slots'
-                    ]);
-
-                    redirect($url, get_string('configsavedquestion', 'quizaccess_quiztimer'), 3);
-
-                }
-            }
-
-        }
-
-    }
-
     /**
      * Generate a new instance of the class based on certain conditions.
      *
@@ -302,7 +252,7 @@ class quizaccess_quiztimer extends quiz_access_rule_base {
      * @param bool $canignoretimelimits Flag to indicate if time limits can be ignored
      * @return self|null A new instance of the class or null based on conditions
      */
-    public static function make(quiz $quizobj, $timenow, $canignoretimelimits) {
+    public static function make(quiz_settings $quizobj, $timenow, $canignoretimelimits) {
         global $DB;
         if (!empty($quizobj->get_quiz()->timelimit)) {
             $quizmode = $DB->get_field('quizaccess_quiztimer', 'quiz_mode', ['quiz' => $quizobj->get_quiz()->id]);
@@ -335,12 +285,12 @@ class quizaccess_quiztimer extends quiz_access_rule_base {
     /**
      * Adds preflight check form fields for the quiz module.
      *
-     * @param preflight_check_form $quizform The quiz preflight check form object.
+     * @param mod_quiz\form\preflight_check_form $quizform The quiz preflight check form object.
      * @param MoodleQuickForm $mform The Moodle quick form object.
      * @param int $attemptid The ID of the quiz attempt.
      * @throws Exception If there is an error.
      */
-    public function add_preflight_check_form_fields(preflight_check_form $quizform,
+    public function add_preflight_check_form_fields(mod_quiz\form\preflight_check_form $quizform,
             MoodleQuickForm $mform, $attemptid) {
         global $DB, $PAGE, $USER;
 
@@ -512,7 +462,7 @@ function show_timer_based_on_option($option) {
             global $DB, $quiz, $PAGE, $USER;
 
             $attemptid = required_param('attempt', PARAM_INT);
-            $attempt = \mod_quiz\quiz_attempt::create($attemptid);
+            $attempt = quiz_attempt::create($attemptid);
             $quizid = $attempt->get_quiz();
             $id = $quizid->id;
 
@@ -585,7 +535,7 @@ function show_timer_based_on_option($option) {
             global $DB, $quiz, $PAGE, $USER;
 
             $attemptid = required_param('attempt', PARAM_INT);
-            $attempt = \mod_quiz\quiz_attempt::create($attemptid);
+            $attempt = quiz_attempt::create($attemptid);
             $quizid = $attempt->get_quiz();
             $id = $quizid->id;
             $quizid = $id;
@@ -654,7 +604,7 @@ function show_timer_based_on_option($option) {
             global $DB, $quiz, $PAGE, $USER;
 
             $attemptid = required_param('attempt', PARAM_INT);
-            $attempt = \mod_quiz\quiz_attempt::create($attemptid);
+            $attempt = quiz_attempt::create($attemptid);
             $quizid = $attempt->get_quiz();
             $id = $quizid->id;
 
@@ -781,7 +731,7 @@ function get_quizoptions() {
     if ($attemptparam !== '') {
 
         $attemptid = required_param('attempt', PARAM_INT);
-        $attempt = \mod_quiz\quiz_attempt::create($attemptid);
+        $attempt = quiz_attempt::create($attemptid);
         $quizid = $attempt->get_quiz();
         $id = $quizid->id;
         $quizid = $id;
@@ -862,7 +812,6 @@ function get_preflight_errors() {
     }
 }
 
-$quizmode = get_quizoptions();
-if($quizmode) {
-    echo show_timer_based_on_option($quizmode);
-}
+
+
+echo show_timer_based_on_option(get_quizoptions());
