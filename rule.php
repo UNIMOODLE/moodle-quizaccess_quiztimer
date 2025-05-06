@@ -709,13 +709,15 @@ function show_timer_based_on_option($option) {
 
     // Send quiz results after finish.
     if (basename($_SERVER['PHP_SELF']) == 'summary.php') {
-        echo '<script type="text/javascript">
+        if($option === 2 || $option === 3 || $option === 4) {
+            echo '<script type="text/javascript">
             document.addEventListener("DOMContentLoaded", function() {
             var button = document.getElementsByClassName("btn btn-primary")[0];
             button.click();
             localStorage.clear();
             });
-        </script>';
+            </script>';
+        }
     }
 }
 
