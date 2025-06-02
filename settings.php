@@ -50,7 +50,7 @@ if ($hassiteconfig) {
         get_string('setting:timedsections', 'quizaccess_quiztimer'),
         get_string('setting:timedsections_desc', 'quizaccess_quiztimer'),
         10, PARAM_INT));
-    $settings->add(new admin_setting_configselect('quiz/timedsectionsunit',
+    $settings->add(new admin_setting_configselect('quizaccess_quiztimer/timedsectionsunit',
         get_string('unitsections', 'quizaccess_quiztimer'), '',
         2, $units));
 
