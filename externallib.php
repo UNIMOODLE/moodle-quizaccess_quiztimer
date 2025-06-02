@@ -35,6 +35,9 @@ global $CFG;
 require_once("$CFG->libdir/externallib.php");
 require_once($CFG->dirroot . '/mod/quiz/accessrule/accessrulebase.php');
 require_once($CFG->dirroot . '/mod/quiz/accessmanager.php');
+use core_external\external_api;
+use core_external\external_function_parameters;
+use core_external\external_value;
 
 /**
  * quiztime external functions
@@ -49,7 +52,7 @@ class quizaccess_quiztimer_external extends external_api {
     /**
      * Checks that the cmid passed is of type int.
      *
-     * @return validate function.
+     * @return external_function_parameters function.
      */
     public static function get_quiz_id_parameters() {
         return new external_function_parameters(
@@ -85,7 +88,7 @@ class quizaccess_quiztimer_external extends external_api {
     /**
      * Params check for setting a question time.
      *
-     * @return validate function.
+     * @return external_function_parameters function.
      */
     public static function set_question_time_parameters() {
         return new external_function_parameters(
@@ -179,7 +182,7 @@ class quizaccess_quiztimer_external extends external_api {
     /**
      * Checks that the questionid is of type int
      *
-     * @return validate function.
+     * @return external_function_parameters function.
      */
     public static function get_question_time_parameters() {
         return new external_function_parameters(
@@ -236,7 +239,7 @@ class quizaccess_quiztimer_external extends external_api {
     /**
      * Validates the params for setting a section time.
      *
-     * @return validation function
+     * @return external_function_parameters function
      */
     public static function set_section_time_parameters() {
         return new external_function_parameters(
@@ -330,7 +333,7 @@ class quizaccess_quiztimer_external extends external_api {
     /**
      * Validates the params for getting a section time.
      *
-     * @return validation function
+     * @return external_function_parameters function
      */
     public static function get_section_time_parameters() {
         return new external_function_parameters(
@@ -389,7 +392,7 @@ class quizaccess_quiztimer_external extends external_api {
     /**
      * Params check for repaginating a quiz according to editmethod.
      *
-     * @return validate function.
+     * @return external_function_parameters function.
      */
     public static function repaginate_slots_parameters() {
         return new external_function_parameters(
@@ -451,7 +454,7 @@ class quizaccess_quiztimer_external extends external_api {
     /**
      * Params check for getting a quiz time.
      *
-     * @return validate function.
+     * @return external_function_parameters function.
      */
     public static function get_quiz_time_parameters() {
         return new external_function_parameters(

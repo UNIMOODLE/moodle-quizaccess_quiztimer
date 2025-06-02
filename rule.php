@@ -495,6 +495,15 @@ function show_timer_based_on_option($option) {
             $tiempos = array_column($quiz, 'timevalue');
             $tiempos = array_map('intval', $tiempos);
 
+
+
+            // Check if the 'page' parameter is present in the URL.
+            $currentpage = optional_param('page', $attempt->get_currentpage(), PARAM_INT);
+            $sectionkey = $currentpage;
+            $sectiontime = $tiempos[$currentpage];
+
+
+
             $data = new stdClass;
             $data->id = $id;
             $data->timelimit = 0;
@@ -511,9 +520,29 @@ function show_timer_based_on_option($option) {
                 // Check if the attempt is valid.
                 if ($attempt) {
 
+                $record = $DB->get_record('quizaccess_usertimedsections', [
+                    'quizid'   => $quizid,
+                    'section'  => $sectionkey,
+                    'userid'   => $USER->id,
+                    'attempt'  => $attemptid,
+                ]);
+
+                if (!$record) {
+                    $record = new stdClass();
+                    $record->quizid = $quizid;
+                    $record->section = $sectionkey;
+                    $record->userid = $USER->id;
+                    $record->attempt = $attemptid;
+                    $record->timestart = time();
+                    $record->timefinish = time() + $sectiontime;
+                    $DB->insert_record('quizaccess_usertimedsections', $record);
+                }
+
                     $data = [
                         'attemptid' => $attemptid,
                         'tiempos' => $tiempos,
+                        'section' => $sectionkey,
+                        'secondsleft'  => $record->timefinish - time()
                     ];
                     $PAGE->requires->js_call_amd('quizaccess_quiztimer/section', 'init', [$data]);
 
@@ -564,6 +593,18 @@ function show_timer_based_on_option($option) {
             $tiempos = array_column($quiz, 'timevalue');
             $tiempos = array_map('intval', $tiempos);
 
+            // Check if the 'page' parameter is present in the URL.
+            $currentpage = optional_param('page', $attempt->get_currentpage(), PARAM_INT);
+            // Get the questions of the current page.
+            $questionid = $attempt->get_slots($currentpage);
+            $questionid = reset($questionid);
+
+
+            $allSlots = $attempt->get_slots();
+            $slotIndex = array_search($questionid, $allSlots);
+            $slotTime = $tiempos[$slotIndex];
+
+
             $data = new stdClass;
             $data->id = $id;
             $data->timelimit = 0;
@@ -579,13 +620,31 @@ function show_timer_based_on_option($option) {
 
                 // Check if the attempt is valid.
                 if ($attempt) {
+                    $record = $DB->get_record('quizaccess_usertimedslots', [
+                        'quizid'  => $quizid,
+                        'slot'    => $questionid,
+                        'userid'  => $USER->id,
+                        'attempt' => $attemptid,
+                    ]);
+
+                    if (!$record) {
+                        $record = new stdClass();
+                        $record->quizid = $quizid;
+                        $record->slot = $questionid;
+                        $record->userid = $USER->id;
+                        $record->attempt = $attemptid;
+                        $record->timestart = time();
+                        $record->timefinish = time() + $slotTime;
+                        $DB->insert_record('quizaccess_usertimedslots', $record);
+                    }
 
                     $data = [
                         'attemptid' => $attemptid,
-                        'tiempos' => $tiempos,
+                        'slot' => $questionid,
+                        'secondsleft'  => $record->timefinish - time()
                     ];
-                    $PAGE->requires->js_call_amd('quizaccess_quiztimer/question', 'init', [$data]);
 
+                    $PAGE->requires->js_call_amd('quizaccess_quiztimer/question', 'init', [$data]);
                 }
             } else {
                 $data = new stdClass;
@@ -678,6 +737,11 @@ function show_timer_based_on_option($option) {
                 }
             }
 
+            // Check if the 'page' parameter is present in the URL.
+            $currentpage = optional_param('page', $attempt->get_currentpage(), PARAM_INT);
+            $sectionkey = $currentpage;
+            $sectiontime = $tiempos[$currentpage];
+
             $data = new stdClass;
             $data->id = $id;
             $data->timelimit = 0;
@@ -691,9 +755,30 @@ function show_timer_based_on_option($option) {
                 // Check if the attempt is valid.
                 if ($attempt) {
 
+                    $record = $DB->get_record('quizaccess_usertimedsections', [
+                        'quizid'   => $quizid,
+                        'section'  => $sectionkey,
+                        'userid'   => $USER->id,
+                        'attempt'  => $attemptid,
+                    ]);
+
+                    if (!$record) {
+                        $record = new stdClass();
+                        $record->quizid = $quizid;
+                        $record->section = $sectionkey;
+                        $record->userid = $USER->id;
+                        $record->attempt = $attemptid;
+                        $record->timestart = time();
+                        $record->timefinish = time() + $sectiontime;
+                        $DB->insert_record('quizaccess_usertimedsections', $record);
+                    }
+
+
                     $data = [
                         'attemptid' => $attemptid,
                         'tiempos' => $tiempos,
+                        'section' => $sectionkey,
+                        'secondsleft'  => $record->timefinish - time()
                     ];
                     $PAGE->requires->js_call_amd('quizaccess_quiztimer/page', 'init', [$data]);
 

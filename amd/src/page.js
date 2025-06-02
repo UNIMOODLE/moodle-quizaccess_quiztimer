@@ -1,139 +1,106 @@
-define(function(require, exports, module) {
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+// Project implemented by the \"Recovery, Transformation and Resilience Plan.
+// Funded by the European Union - Next GenerationEU\".
+//
+// Produced by the UNIMOODLE University Group: Universities of
+// Valladolid, Complutense de Madrid, UPV/EHU, León, Salamanca,
+// Illes Balears, Valencia, Rey Juan Carlos, La Laguna, Zaragoza, Málaga,
+// Córdoba, Extremadura, Vigo, Las Palmas de Gran Canaria y Burgos.
+
+/**
+ * Version details
+ *
+ * @package    quizaccess_quiztimer
+ * @copyright  2023 Proyecto UNIMOODLE
+ * @author     UNIMOODLE Group (Coordinator) <direccion.area.estrategia.digital@uva.es>
+ * @author     ISYC <soporte@isyc.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+define(function() {
     'use strict';
 
     var init = function(data) {
-        var attemptid = data.attemptid;
-        var tiempos = data.tiempos;
+        var section = data.section;
+        var secondsleft = data.secondsleft;
+        var timefinish = Math.floor(Date.now() / 1000) + secondsleft;
 
-        const backgroundColors = ["#ca3120", "#d73422", "#dd3d2b", "#e04938",
-        "#e25546", "#e46153", "#e66d60", "#e8796d", "#ea867a", "#ec9288",
-        "#ee9e95", "#f0aaa2", "#f2b6af", "#f4c2bc", "#f7ceca", "#f9dad7", "#fbe6e4"];
-
-       const textColors = ["#fff", "#fff", "#fff", "#fff", "#fff", "#fff",
-        "#fff", "#1d2125", "#1d2125", "#1d2125", "#1d2125",
-        "#1d2125", "#1d2125", "#1d2125", "#1d2125", "#1d2125", "#1d2125"];
-
-       //Disable original timer
-       var divElement = document.getElementById("quiz-timer");
-       if (divElement) {
-       divElement.disabled = true;
-       divElement.innerHTML = "Timer disabled";
+        // Disable original timer.
+        var divElement = document.getElementById("quiz-timer");
+        if (divElement) {
+            divElement.disabled = true;
+            divElement.innerHTML = "Timer disabled";
         }
 
-       var quizTimerWrapper = document.getElementById("quiz-timer-wrapper");
-       if (quizTimerWrapper.style.display === "flex") {
-       quizTimerWrapper.style.display = "";
-       }
-
-       var currentPageURL = window.location.href;
-       var urlParams = new URLSearchParams(currentPageURL);
-       var pageID = urlParams.get("page");
-
-       if(pageID === null){
-           pageID = 0;
-       }
-
-       var countdownID = "countdown" + pageID;
-       var quiztimercountdown = document.createElement('div');
-       quiztimercountdown.id = countdownID;
-       quiztimercountdown.className = 'countdown-section';
-
-       quiztimercountdown.style.maxWidth = "max-content";
-       quiztimercountdown.style.marginLeft = "auto";
-
-       var existingDiv = document.querySelector('.container-fluid.tertiary-navigation');
-       if (existingDiv) {
-         existingDiv.parentNode.insertBefore(quiztimercountdown, existingDiv.nextSibling);
+        var quizTimerWrapper = document.getElementById("quiz-timer-wrapper");
+        if (quizTimerWrapper && quizTimerWrapper.style.display === "flex") {
+            quizTimerWrapper.style.display = "";
         }
-       var headingElement = document.querySelectorAll(".container-fluid.tertiary-navigation");
 
-       /**
-        * Updates the countdown timer based on the end time.
-        *
-        * @param {number} endTime - The end time of the countdown timer in seconds.
-        */
-       function updateCountdownTimer(endTime) {
+        // Create the div for the timer.
+        var countdownID = "countdown" + section;
+        var quiztimercountdown = document.createElement('div');
+        quiztimercountdown.id = countdownID;
+        quiztimercountdown.className = 'quiztimer-countdown-section';
+        quiztimercountdown.style.maxWidth = "max-content";
+        quiztimercountdown.style.marginLeft = "auto";
 
-           var countdownElement = document.getElementById("countdown" + (pageID));
-           var countdownInterval = setInterval(function() {
-               var currentTime = Math.floor(Date.now() / 1000);
-               var timeRemaining =  (endTime - 1) - currentTime;
+        var existingDiv = document.querySelector('.container-fluid.tertiary-navigation');
+        if (existingDiv) {
+            existingDiv.parentNode.insertBefore(quiztimercountdown, existingDiv.nextSibling);
+        }
 
+        var headingElement = document.querySelectorAll(".container-fluid.tertiary-navigation");
 
-               var totalDuration = endTime - (endTime - 1);
-               var currentPercentage = (timeRemaining / totalDuration) * 10;
-               var index = Math.round(currentPercentage);
+        function updateCountdownTimer(endTime) {
+            var countdownElement = document.getElementById(countdownID);
+            var countdownInterval = setInterval(function() {
+                var currentTime = Math.floor(Date.now() / 1000);
+                var timeRemaining = endTime - currentTime;
 
-               countdownElement.style.backgroundColor = backgroundColors[index];
-               countdownElement.style.color = textColors[index];
+                if (timeRemaining <= 0) {
+                    clearInterval(countdownInterval);
+                    countdownElement.innerHTML = "00:00:00";
+                    countdownElement.disabled = true;
 
-               if (timeRemaining <= -0 ) {
-                   clearInterval(countdownInterval);
-                   var button = document.getElementById("mod_quiz-next-nav");
-                   localStorage.setItem("countdown" + pageID, 0);
-                   countdownElement.innerHTML = "00:00:00";
-                   countdownElement.disabled = true;
-                   button.click();
-                   return;
-               } else {
-                   var button = document.getElementById("mod_quiz-next-nav");
-                   if (button) {
-                       button.addEventListener("click", function() {
-                           localStorage.setItem("countdown" + pageID, timeRemaining);
-                       });
-                   }
-               }
+                    var button = document.getElementById("mod_quiz-next-nav");
+                    if (button) {
+                        button.click();
+                    }
+                    return;
+                }
 
+                var hours = Math.floor(timeRemaining / 3600);
+                var minutes = Math.floor((timeRemaining % 3600) / 60);
+                var seconds = timeRemaining % 60;
 
-               // Function to save the countdown time before leaving the page
-               function saveCountdownTime() {
-                   localStorage.setItem("countdown" + pageID, timeRemaining);
-                   localStorage.setItem("attempt",  attemptid);
-               }
+                var formattedTime = hours.toString().padStart(2, "0") + ":" +
+                                    minutes.toString().padStart(2, "0") + ":" +
+                                    seconds.toString().padStart(2, "0");
+                countdownElement.innerHTML = formattedTime;
+            }, 1);
+        }
 
-               // Attach the saveCountdownTime function to the beforeunload event
-               window.addEventListener("beforeunload", saveCountdownTime);
+        updateCountdownTimer(timefinish);
 
-               var hours = Math.floor(timeRemaining / 3600);
-               var minutes = Math.floor((timeRemaining % 3600) / 60);
-               var seconds = Math.floor(timeRemaining % 60);
-
-               var formattedTime = hours.toString().padStart(2, "0") + ":" +
-                                   minutes.toString().padStart(2, "0") + ":" +
-                                   seconds.toString().padStart(2, "0");
-               countdownElement.innerHTML = formattedTime;
-               }, 1);
-
-       }
-
-
-
-
-       // Get the end time from your server-side variable.
-       var endTime = tiempos[pageID] + Math.floor(Date.now() / 1000);
-
-
-       var storedTime = localStorage.getItem("countdown" + pageID);
-       if (storedTime !== null) {
-           // Use the stored time as the end time
-           endTime = parseInt(storedTime) + Math.floor(Date.now() / 1000);
-           // Remove the stored time from localStorage
-           localStorage.removeItem("countdown" + pageID);
-       }
-
-
-
-       // Start the countdown timer.
-       updateCountdownTimer(endTime + 1, 5);
-
-       // Insert countdown elements after the respective heading elements.
-       headingElement.forEach(function(headingElement, index) {
-
-       var textoElement = document.getElementById("countdown" + (index));
-       if (headingElement && textoElement) {
-           //headingElement.parentNode.insertBefore(textoElement, headingElement.nextSibling);
-           headingElement.appendChild(textoElement);
-       }
+        headingElement.forEach(function(heading) {
+            var textoElement = document.getElementById("countdown" + section);
+            if (heading && textoElement) {
+                heading.appendChild(textoElement);
+            }
         });
     };
 
