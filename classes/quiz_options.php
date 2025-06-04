@@ -85,7 +85,7 @@ class quiz_options {
      * @return int
      */
     public function set_quiz_option($quizid, $selected) {
-        global $CFG, $DB, $USER;
+        global $DB, $USER;
 
         switch ($selected) {
             case 'section':

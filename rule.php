@@ -871,7 +871,6 @@ function get_preflight_errors() {
             case 3:
                 foreach ($slots as $slot) {
                     if ($slot->timevalue <= 0) {
-                        $slottime = $slot->timevalue;
                         $slotdata = $DB->get_record('question', ['id' => $DB->get_field('quiz_slots', 'slot',
                         ['id' => $slot->slot])]);
                         $quiztimeserrors['slot' . $slotdata->id] = get_string('question') . ': ' . $slotdata->name;
