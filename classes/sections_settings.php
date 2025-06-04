@@ -42,10 +42,6 @@ class sections_settings extends persistent {
         /** Table name for the persistent. */
         const TABLE = 'quizaccess_timedsections';
 
-        /** @var property_list $plist The quiztimer config represented as a Property List object. */
-        private $plist;
-
-
         /**
          * Return the definition of the properties of this model.
          *

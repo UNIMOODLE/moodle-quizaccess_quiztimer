@@ -176,7 +176,7 @@ class quizaccess_quiztimer extends quiz_access_rule_base {
             'html',
             '<script type="text/javascript">
                 // Function to update the quiz navigation method.
-                function updatequiznavmethod(quizid, optionnavigation) {
+                function quizaccess_quiztimer_updatequiznavmethod(quizid, optionnavigation) {
                     var xhttp = new XMLHttpRequest();
                     xhttp.onreadystatechange = function() {
                         if (this.readyState == 4 && this.status == 200) {
@@ -190,9 +190,9 @@ class quizaccess_quiztimer extends quiz_access_rule_base {
                 // Function to perform some action when the selection changes.
                 function updateQuizSettingsOnChange() {
                     var selectedValue = document.getElementById("id_timequestion").value;
-                    // Call the updatequiznavmethod function based on the selected value.
+                    // Call the quizaccess_quiztimer_updatequiznavmethod function based on the selected value.
                     if (selectedValue === "limit") {
-                        updatequiznavmethod(' . $quizid . ', 1);
+                        quizaccess_quiztimer_updatequiznavmethod(' . $quizid . ', 1);
                         document.getElementById("id_timelimit_number").disabled = false;
                         document.getElementById("id_timelimit_timeunit").disabled = false;
                         document.getElementById("id_timelimit_enabled").disabled = false;
@@ -202,7 +202,7 @@ class quizaccess_quiztimer extends quiz_access_rule_base {
                         document.getElementById("id_repaginatenow").checked = 0;
                     }
                     if (selectedValue === "section") {
-                        updatequiznavmethod(' . $quizid . ', 2);
+                        quizaccess_quiztimer_updatequiznavmethod(' . $quizid . ', 2);
                         document.getElementById("id_timelimit_number").disabled = true;
                         document.getElementById("id_timelimit_number").value = "";
                         document.getElementById("id_timelimit_timeunit").disabled = true;
@@ -215,7 +215,7 @@ class quizaccess_quiztimer extends quiz_access_rule_base {
                         document.getElementById("id_repaginatenow").checked = 1;
                     }
                     if (selectedValue === "question") {
-                        updatequiznavmethod(' . $quizid . ', 3);
+                        quizaccess_quiztimer_updatequiznavmethod(' . $quizid . ', 3);
                         document.getElementById("id_timelimit_number").disabled = true;
                         document.getElementById("id_timelimit_number").value = "";
                         document.getElementById("id_timelimit_timeunit").disabled = true;
@@ -228,7 +228,7 @@ class quizaccess_quiztimer extends quiz_access_rule_base {
                         document.getElementById("id_repaginatenow").checked = 1;
                     }
                     if (selectedValue === "page") {
-                        updatequiznavmethod(' . $quizid . ', 4);
+                        quizaccess_quiztimer_updatequiznavmethod(' . $quizid . ', 4);
                         document.getElementById("id_timelimit_number").disabled = true;
                         document.getElementById("id_timelimit_number").value = "";
                         document.getElementById("id_timelimit_timeunit").disabled = true;
@@ -411,8 +411,8 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST') 
         $quizid = $quizidparam;
         $optionnavigation = $optionnavigationparam;
 
-        // Call the updatequiznavmethod function with the retrieved parameters.
-        updatequiznavmethod($quizid, $optionnavigation);
+        // Call the quizaccess_quiztimer_updatequiznavmethod function with the retrieved parameters.
+        quizaccess_quiztimer_updatequiznavmethod($quizid, $optionnavigation);
     }
 }
 
@@ -425,7 +425,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST') 
  * @param  mixed $optionnavigation
  * @return void
  */
-function updatequiznavmethod($quizid, $optionnavigation) {
+function quizaccess_quiztimer_updatequiznavmethod($quizid, $optionnavigation) {
     global $DB;
     $quiz = $DB->get_record('quiz', ['id' => $quizid]);
 
@@ -920,7 +920,6 @@ function get_preflight_errors() {
             case 3:
                 foreach ($slots as $slot) {
                     if ($slot->timevalue <= 0) {
-                        $slottime = $slot->timevalue;
                         $slotdata = $DB->get_record('question', ['id' => $DB->get_field('quiz_slots', 'slot',
                         ['id' => $slot->slot])]);
                         $quiztimeserrors['slot' . $slotdata->id] = get_string('question') . ': ' . $slotdata->name;

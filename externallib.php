@@ -64,7 +64,7 @@ class quizaccess_quiztimer_external extends external_api {
      * @return string json encoded quizid for current course module
      */
     public static function get_quiz_id($cmid) {
-        global $DB, $CFG;
+        global $DB;
         $params = self::validate_parameters(
             self::get_quiz_id_parameters(),
                 ["cmid" => $cmid]
@@ -105,7 +105,7 @@ class quizaccess_quiztimer_external extends external_api {
      * @return string json encoded info of the time inserted | updated in the db
      */
     public static function set_question_time($quizid, $questionid, $timedata) {
-        global $DB, $CFG, $USER;
+        global $DB, $USER;
         $params = self::validate_parameters(
             self::set_question_time_parameters(),
                 ["quizid" => $quizid, "questionid" => $questionid, "timedata" => $timedata]
@@ -195,7 +195,7 @@ class quizaccess_quiztimer_external extends external_api {
      * @return string json encoded unit and value from a question
      */
     public static function get_question_time($questionid) {
-        global $DB, $CFG;
+        global $DB;
         $params = self::validate_parameters(
             self::get_question_time_parameters(),
                 ["questionid" => $questionid]
@@ -255,7 +255,7 @@ class quizaccess_quiztimer_external extends external_api {
      * @return string json encoded information about setted section
      */
     public static function set_section_time($quizid, $sectionid, $timedata) {
-        global $DB, $CFG, $USER;
+        global $DB, $USER;
         $params = self::validate_parameters(
             self::set_section_time_parameters(),
                 ["quizid" => $quizid, "sectionid" => $sectionid, "timedata" => $timedata]
@@ -348,7 +348,7 @@ class quizaccess_quiztimer_external extends external_api {
      * @return string json encoded section time unit and value
      */
     public static function get_section_time($quizid, $sectionid) {
-        global $DB, $CFG;
+        global $DB;
         $params = self::validate_parameters(
             self::get_section_time_parameters(),
                 ["quizid" => $quizid, "sectionid" => $sectionid]
@@ -406,7 +406,7 @@ class quizaccess_quiztimer_external extends external_api {
      * @return string json encoded info of the time inserted | updated in the db
      */
     public static function repaginate_slots($quizid, $editmethod) {
-        global $DB, $CFG, $DB;
+        global $DB, $DB;
         $params = self::validate_parameters(
             self::repaginate_slots_parameters(),
                 ["quizid" => $quizid, "editmethod" => $editmethod]
@@ -468,7 +468,7 @@ class quizaccess_quiztimer_external extends external_api {
      * @return string json encoded info of the time inserted | updated in the db
      */
     public static function get_quiz_time($quizid, $editmethod) {
-        global $DB, $CFG, $DB;
+        global $DB, $DB;
         $params = self::validate_parameters(
             self::get_quiz_time_parameters(),
                 ["quizid" => $quizid, "editmethod" => $editmethod]
