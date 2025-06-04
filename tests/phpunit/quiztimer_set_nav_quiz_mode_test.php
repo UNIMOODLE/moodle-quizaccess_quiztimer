@@ -46,12 +46,12 @@ class quiztimer_set_nav_quiz_mode_test extends \advanced_testcase {
 
     // Write the tests here as public funcions.
     // Please refer to {@link https://docs.moodle.org/dev/PHPUnit} for more details on PHPUnit tests in Moodle.
-    
+
     /**
      * @var \stdClass
      */
     private static $course;
-    
+
     /**
      * @var \stdClass
      */
@@ -173,7 +173,7 @@ class quiztimer_set_nav_quiz_mode_test extends \advanced_testcase {
         $this->assertTrue($attemptobj->has_response_to_at_least_one_graded_question());
 
         $rule = new \quizaccess_quiztimer($attempt, self::$quiz);
-        $rule->updatequiznavmethod($cm->id, $optionnavigation);
+        $rule->quizaccess_quiztimer_updatequiznavmethod($cm->id, $optionnavigation);
 
         // Finish attempt.
         $attemptobj->process_finish(time(), false);
