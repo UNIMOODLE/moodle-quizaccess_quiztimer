@@ -67,11 +67,16 @@ class quizaccess_quiztimer_external extends external_api {
      * @return string json encoded quizid for current course module
      */
     public static function get_quiz_id($cmid) {
-        global $DB, $CFG;
+        global $DB;
         $params = self::validate_parameters(
             self::get_quiz_id_parameters(),
                 ["cmid" => $cmid]
         );
+        $cm = get_coursemodule_from_id('quiz', $params['cmid'], 0, false, MUST_EXIST);
+        $context = context_module::instance($cm->id);
+        self::validate_context($context);
+        require_capability('mod/quiz:manage', $context);
+
         $sql = "SELECT instance quizid FROM {course_modules} WHERE id = :id";
         $params = ['id' => $cmid];
         $quizid = $DB->get_record_sql($sql, $params);
@@ -113,6 +118,12 @@ class quizaccess_quiztimer_external extends external_api {
             self::set_question_time_parameters(),
                 ["quizid" => $quizid, "questionid" => $questionid, "timedata" => $timedata]
         );
+        $cm = get_coursemodule_from_instance('quiz', $params['quizid'], 0, false, MUST_EXIST);
+        $context = context_module::instance($cm->id);
+        self::validate_context($context);
+        require_capability('mod/quiz:manage', $context);
+
+
         $sql = "SELECT id, slot, timeunit, timevalue FROM {quizaccess_timedslots} WHERE slot = :slot AND quizid = :quizid";
         $params = ['slot' => $questionid, 'quizid' => $quizid];
         $timedslot = $DB->get_record_sql($sql, $params);
@@ -203,6 +214,11 @@ class quizaccess_quiztimer_external extends external_api {
             self::get_question_time_parameters(),
                 ["questionid" => $questionid]
         );
+        $question = $DB->get_record('question', ['id' => $params['questionid']], '*', MUST_EXIST);
+        $context = context_module::instance($question->contextid);
+        self::validate_context($context);
+        require_capability('mod/quiz:manage', $context);
+
         $params = ['slot' => $questionid];
         $slottime = $DB->get_record('quizaccess_timedslots', $params, 'timeunit, timevalue', IGNORE_MISSING);
         if (!$slottime) {
@@ -263,6 +279,11 @@ class quizaccess_quiztimer_external extends external_api {
             self::set_section_time_parameters(),
                 ["quizid" => $quizid, "sectionid" => $sectionid, "timedata" => $timedata]
         );
+        $cm = get_coursemodule_from_instance('quiz', $params['quizid'], 0, false, MUST_EXIST);
+        $context = context_module::instance($cm->id);
+        self::validate_context($context);
+        require_capability('mod/quiz:manage', $context);
+
         $sql = "SELECT id, sectionid, timeunit, timevalue FROM {quizaccess_timedsections} WHERE
                  sectionid = :section AND quizid = :quizid";
         $params = ['section' => $sectionid, 'quizid' => $quizid];
@@ -356,6 +377,11 @@ class quizaccess_quiztimer_external extends external_api {
             self::get_section_time_parameters(),
                 ["quizid" => $quizid, "sectionid" => $sectionid]
         );
+        $cm = get_coursemodule_from_instance('quiz', $params['quizid'], 0, false, MUST_EXIST);
+        $context = context_module::instance($cm->id);
+        self::validate_context($context);
+        require_capability('mod/quiz:manage', $context);
+
         $sectiontime = $DB->get_record('quizaccess_timedsections', $params, 'timeunit, timevalue', IGNORE_MISSING);
         if (!$sectiontime) {
             $sectiontime = new stdClass();
@@ -414,6 +440,10 @@ class quizaccess_quiztimer_external extends external_api {
             self::repaginate_slots_parameters(),
                 ["quizid" => $quizid, "editmethod" => $editmethod]
         );
+        $cm = get_coursemodule_from_instance('quiz', $params['quizid'], 0, false, MUST_EXIST);
+        $context = context_module::instance($cm->id);
+        self::validate_context($context);
+        require_capability('mod/quiz:manage', $context);
         $timetype = null;
         switch ($editmethod) {
             case 'section':
@@ -476,6 +506,10 @@ class quizaccess_quiztimer_external extends external_api {
             self::get_quiz_time_parameters(),
                 ["quizid" => $quizid, "editmethod" => $editmethod]
         );
+        $cm = get_coursemodule_from_instance('quiz', $params['quizid'], 0, false, MUST_EXIST);
+        $context = context_module::instance($cm->id);
+        self::validate_context($context);
+        require_capability('mod/quiz:manage', $context);
         if ($editmethod == 'timelimit') {
             return 0;
         }
