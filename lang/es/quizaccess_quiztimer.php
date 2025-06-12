@@ -93,3 +93,23 @@ $string['disabledbycustomtimer'] = 'Fijo por el modo de tiempos del cuestionario
 $string['configsavedsection'] = 'Configuración guardada correctamente. <br> <b>Recuerda cambiar los tiempos de las secciones.</b>';
 $string['configsavedquestion'] = 'Configuración guardada correctamente. <br> <b>Recuerda cambiar los tiempos de las preguntas.</b>';
 $string['configsavedpage'] = 'Configuración guardada correctamente. <br> <b>Recuerda cambiar los tiempos de las páginas.</b>';
+
+
+
+$string['privacy:metadata:quiz'] = 'El cuestionario al que pertenece esta configuración de temporizador.';
+$string['privacy:metadata:quiz_mode'] = 'El modo de temporizador utilizado en el cuestionario.';
+$string['privacy:metadata:usermodified'] = 'El ID del usuario que modificó la configuración del temporizador.';
+$string['privacy:metadata:timecreated'] = 'La fecha y hora en que se creó la configuración del temporizador.';
+$string['privacy:metadata:timemodified'] = 'La fecha y hora en que se modificó por última vez la configuración del temporizador.';
+
+$string['privacy:metadata:quizid'] = 'El cuestionario asociado con los datos temporales del usuario.';
+$string['privacy:metadata:slot'] = 'La posición de la pregunta a la que se refiere el dato temporal.';
+$string['privacy:metadata:section'] = 'La sección del cuestionario a la que se refiere el dato temporal.';
+$string['privacy:metadata:userid'] = 'El ID del usuario al que pertenecen estos datos temporales.';
+$string['privacy:metadata:attempt'] = 'El número de intento relacionado con los datos temporales.';
+$string['privacy:metadata:timestart'] = 'La fecha y hora de inicio registrados para esta pregunta o sección.';
+$string['privacy:metadata:timefinish'] = 'La fecha y hora de finalización registrados para esta pregunta o sección.';
+
+$string['privacy:metadata:quizaccess_quiztimer'] = 'Datos de configuración del temporizador del cuestionario.';
+$string['privacy:metadata:quizaccess_usertimedslots'] = 'Datos de tiempo por pregunta del usuario.';
+$string['privacy:metadata:quizaccess_usertimedsections'] = 'Datos de tiempo por sección del usuario.';
