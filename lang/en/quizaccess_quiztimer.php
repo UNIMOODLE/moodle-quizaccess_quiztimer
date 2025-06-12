@@ -94,3 +94,23 @@ $string['disabledbycustomtimer'] = 'Fixed because of the custom timer selected i
 $string['configsavedsection'] = 'Configuration saved successfully. <br> <b>Remember to change the section times.</b>';
 $string['configsavedquestion'] = 'Configuration saved successfully. <br> <b>Remember to change the question times.</b>';
 $string['configsavedpage'] = 'Configuration saved successfully. <br> <b>Remember to change the page times.</b>';
+
+
+
+$string['privacy:metadata:quiz'] = 'The quiz to which this timer configuration belongs.';
+$string['privacy:metadata:quiz_mode'] = 'The timer mode used in the quiz.';
+$string['privacy:metadata:usermodified'] = 'The ID of the user who modified the timer settings.';
+$string['privacy:metadata:timecreated'] = 'The time when the timer settings were created.';
+$string['privacy:metadata:timemodified'] = 'The time when the timer settings were last modified.';
+
+$string['privacy:metadata:quizid'] = 'The quiz associated with the user timer data.';
+$string['privacy:metadata:slot'] = 'The slot (question position) to which the timing data refers.';
+$string['privacy:metadata:section'] = 'The section of the quiz to which the timing data refers.';
+$string['privacy:metadata:userid'] = 'The ID of the user whose timing data is recorded.';
+$string['privacy:metadata:attempt'] = 'The attempt number related to the timing data.';
+$string['privacy:metadata:timestart'] = 'The start time recorded for this slot or section.';
+$string['privacy:metadata:timefinish'] = 'The end time recorded for this slot or section.';
+
+$string['privacy:metadata:quizaccess_quiztimer'] = 'Configuration data for the quiz timer.';
+$string['privacy:metadata:quizaccess_usertimedslots'] = 'User timing data per question.';
+$string['privacy:metadata:quizaccess_usertimedsections'] = 'User timing data per section.';
