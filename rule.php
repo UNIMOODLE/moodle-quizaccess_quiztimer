@@ -295,7 +295,7 @@ class quizaccess_quiztimer extends \mod_quiz\local\access_rule_base {
         global $DB, $PAGE, $USER;
 
         $context = context_module::instance($PAGE->cm->id);
-        $quiztimeserrors = get_preflight_errors();
+        $quiztimeserrors = quizaccess_quiztimer_get_preflight_errors();
         $url = new moodle_url('mod/quiz/accesrule/quiztimer/edit.php', ['cmid' => $PAGE->cm->id, "editmethod" => 'time']);
         if (has_capability('mod/quiz:manage', $context, $USER)) {
             $mform->addElement('header', 'quiztimerheader', get_string('quiztimer', 'quizaccess_quiztimer'));
@@ -324,7 +324,7 @@ class quizaccess_quiztimer extends \mod_quiz\local\access_rule_base {
      */
     public function validate_preflight_check($data, $files, $errors, $attemptid) {
 
-        $quiztimeserrors = get_preflight_errors();
+        $quiztimeserrors = quizaccess_quiztimer_get_preflight_errors();
         if ($quiztimeserrors) {
             $errors['quiztimermessage'] = '';
             foreach ($quiztimeserrors as $errorkey => $errortext) {
@@ -412,7 +412,7 @@ function quizaccess_quiztimer_updatequiznavmethod($quizid, $optionnavigation) {
                 quiz_repaginate_questions($quizid, 1);
             }
         }
-        quizoptions($quizid, $optionnavigation);
+        quizaccess_quiztimer_quizoptions($quizid, $optionnavigation);
     }
 }
 
@@ -426,7 +426,7 @@ function quizaccess_quiztimer_updatequiznavmethod($quizid, $optionnavigation) {
  * @param  mixed $optionnavigation
  * @return void
  */
-function quizoptions($quizid, $optionnavigation) {
+function quizaccess_quiztimer_quizoptions($quizid, $optionnavigation) {
     global $DB;
     $quizoptions = $DB->get_record('quizaccess_quiztimer', ['quiz' => $quizid]);
 
@@ -452,7 +452,7 @@ function quizoptions($quizid, $optionnavigation) {
  * @param  mixed $option
  * @return void
  */
-function show_timer_based_on_option($option) {
+function quizaccess_quiztimer_show_timer_based_on_option($option) {
     $attemptparam = optional_param('attempt', '', PARAM_INT);
     // OPTION 2 = SECTIONS.
     if ($option === 2) {
@@ -812,7 +812,7 @@ function show_timer_based_on_option($option) {
  *
  * @return integer option choosed
  */
-function get_quizoptions() {
+function quizaccess_quiztimer_get_quizoptions() {
     global $DB, $quiz;
     $attemptparam = optional_param('attempt', '', PARAM_INT);
     if ($attemptparam !== '') {
@@ -836,7 +836,7 @@ function get_quizoptions() {
  *
  * @return array|null An array of quiz times errors or null if no quiz timer is found.
  */
-function get_preflight_errors() {
+function quizaccess_quiztimer_get_preflight_errors() {
     global $DB, $PAGE, $USER;
 
     $cm = $PAGE->cm->id;
@@ -900,4 +900,4 @@ function get_preflight_errors() {
 
 
 
-echo show_timer_based_on_option(get_quizoptions());
+echo quizaccess_quiztimer_show_timer_based_on_option(quizaccess_quiztimer_get_quizoptions());
