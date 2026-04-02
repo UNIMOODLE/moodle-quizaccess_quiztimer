@@ -58,18 +58,18 @@ $string['pagetime'] = 'Time for page';
 $string['questiontime'] = 'Time for question';
 
 $string['setting:timedsections'] = 'Section default time';
-$string['setting:timedsections_desc'] = 'The defualt time assigned to the created sections';
+$string['setting:timedsections_desc'] = 'The default time assigned to the created sections';
 $string['setting:timedslots'] = 'Slot default time';
-$string['setting:timedslots_desc'] = 'The defualt time assigned to the created slots';
+$string['setting:timedslots_desc'] = 'The default time assigned to the created slots';
 $string['unitsections'] = 'Sections unit used';
 $string['unitslots'] = 'Slots unit used';
 
 $string['quiztimer'] = 'Quiz times message zone:';
 $string['requirequiztimermessage'] = 'This quiz uses a custom time limit for questions and sections.';
 $string['quizquiztimer'] = 'Quiz timer';
-$string['quiztimererrors'] = 'Quiz setted timers that need attention to allow the quiz execution:';
-$string['warningtime'] = 'Invalid time setted';
-$string['invalidsettedtime'] = 'Tiempo introducido invalido, se ha restablecido al valor anterior';
+$string['quiztimererrors'] = 'Quiz set timers that may need your attention to allow the quiz execution:';
+$string['warningtime'] = 'Invalid set time.';
+$string['invalidsettedtime'] = 'Invalid set time. Reset to previous value.';
 
 $string['canteditquiztimes'] = 'You cannot edit questions times because this quiz has been attempted. ({$a})';
 $string['eventslottimerupdated'] = 'Slot timer updated';
