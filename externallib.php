@@ -33,8 +33,8 @@
 defined('MOODLE_INTERNAL') || die;
 global $CFG;
 require_once("$CFG->libdir/externallib.php");
-require_once($CFG->dirroot . '/mod/quiz/accessrule/accessrulebase.php');
-require_once($CFG->dirroot . '/mod/quiz/accessmanager.php');
+require_once($CFG->dirroot . '/mod/quiz/locallib.php');
+
 use core_external\external_api;
 use core_external\external_function_parameters;
 use core_external\external_value;
@@ -197,7 +197,8 @@ class quizaccess_quiztimer_external extends external_api {
      */
     public static function get_question_time_parameters() {
         return new external_function_parameters(
-            ["questionid" => new external_value(PARAM_INT, "questionid"),
+            ["cmid" => new external_value(PARAM_INT, "cmid"),
+             "questionid" => new external_value(PARAM_INT, "questionid"),
             ]);
     }
 
@@ -205,26 +206,34 @@ class quizaccess_quiztimer_external extends external_api {
      * Gets the information about a question time unit and value
      * from the questions db.
      *
+     * @param int $cmid
      * @param int $questionid
      * @return string json encoded unit and value from a question
      */
-    public static function get_question_time($questionid) {
-        global $DB, $CFG;
+    public static function get_question_time($cmid, $questionid) {
+        global $DB;
         $params = self::validate_parameters(
             self::get_question_time_parameters(),
-                ["questionid" => $questionid]
+                ["cmid" => $cmid, "questionid" => $questionid]
         );
-        $question = $DB->get_record('question', ['id' => $params['questionid']], '*', MUST_EXIST);
-        $context = context_module::instance($question->contextid);
+        $cm = get_coursemodule_from_id('quiz', $params['cmid'], 0, false, MUST_EXIST);
+        $context = context_module::instance($cm->id);
         self::validate_context($context);
         require_capability('mod/quiz:manage', $context);
 
-        $params = ['slot' => $questionid];
-        $slottime = $DB->get_record('quizaccess_timedslots', $params, 'timeunit, timevalue', IGNORE_MISSING);
+        $slotid = (int) $params['questionid'];
+        if ($slotid <= 0) {
+            throw new invalid_parameter_exception('questionid');
+        }
+
+        $slottime = $DB->get_record('quizaccess_timedslots', ['slot' => $slotid], 'timeunit, timevalue', IGNORE_MISSING);
         if (!$slottime) {
             $slottime = new stdClass();
-            $slottime->quizid = $DB->get_field('quiz_slots', 'quizid', ['id' => $questionid], IGNORE_MISSING);
-            $slottime->slot = $questionid;
+            $slottime->quizid = $DB->get_field('quiz_slots', 'quizid', ['id' => $slotid], IGNORE_MISSING);
+            if (empty($slottime->quizid)) {
+                throw new invalid_parameter_exception('questionid');
+            }
+            $slottime->slot = $slotid;
             $slottime->timecreated = (new \DateTime('now', \core_date::get_server_timezone_object()))->getTimestamp();
             get_config('quizaccess_quiztimer', 'timedslotsunit') ? $slottime->timeunit =
             get_config('quizaccess_quiztimer', 'timedslotsunit') : $slottime->timeunit = 1;

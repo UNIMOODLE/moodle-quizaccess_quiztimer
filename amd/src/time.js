@@ -209,6 +209,9 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, aja
      */
     const get_question_id = function(question) {
         let id = question.id;
+        if (!id || id.indexOf('-') === -1) {
+            return { 'questionid': null };
+        }
         let slotid = id.substring(id.indexOf('-') + 1);
         return { 'questionid':slotid};
     };
@@ -769,6 +772,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, aja
     const load_question_time = (questionid) => ajax.call([{
         methodname: 'quizaccess_quiztimer_get_question_time',
         args: {
+            cmid,
             questionid,
         },
     }])[0].done( response => {
@@ -879,6 +883,9 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, aja
                     editpen.addEventListener('click', edit_question_time, true);
 
                     let questionid = get_question_id(question);
+                    if (!questionid.questionid) {
+                        return;
+                    }
                     let timeinput = question.querySelector('.question-time');
                     load_question_time(questionid.questionid).then( (response) => {
                         if (timetype === 'section') {

@@ -176,6 +176,9 @@ class quizaccess_quiztimer extends \mod_quiz\local\access_rule_base {
             '<script type="text/javascript">
                 // Function to update the quiz navigation method.
                 function quizaccess_quiztimer_updatequiznavmethod(quizid, optionnavigation) {
+                    if (!quizid) {
+                        return;
+                    }
                     var xhttp = new XMLHttpRequest();
                     xhttp.onreadystatechange = function() {
                         if (this.readyState == 4 && this.status == 200) {
@@ -188,10 +191,14 @@ class quizaccess_quiztimer extends \mod_quiz\local\access_rule_base {
                 }
                 // Function to perform some action when the selection changes.
                 function updateQuizSettingsOnChange() {
+                    var quizid = ' . ((int)$quizid) . ';
+                    if (!quizid) {
+                        return;
+                    }
                     var selectedValue = document.getElementById("id_timequestion").value;
                     // Call the quizaccess_quiztimer_updatequiznavmethod function based on the selected value.
                     if (selectedValue === "limit") {
-                        quizaccess_quiztimer_updatequiznavmethod(' . $quizid . ', 1);
+                        quizaccess_quiztimer_updatequiznavmethod(quizid, 1);
                         document.getElementById("id_timelimit_number").disabled = false;
                         document.getElementById("id_timelimit_timeunit").disabled = false;
                         document.getElementById("id_timelimit_enabled").disabled = false;
@@ -201,7 +208,7 @@ class quizaccess_quiztimer extends \mod_quiz\local\access_rule_base {
                         document.getElementById("id_repaginatenow").checked = 0;
                     }
                     if (selectedValue === "section") {
-                        quizaccess_quiztimer_updatequiznavmethod(' . $quizid . ', 2);
+                        quizaccess_quiztimer_updatequiznavmethod(quizid, 2);
                         document.getElementById("id_timelimit_number").disabled = true;
                         document.getElementById("id_timelimit_number").value = "";
                         document.getElementById("id_timelimit_timeunit").disabled = true;
@@ -214,7 +221,7 @@ class quizaccess_quiztimer extends \mod_quiz\local\access_rule_base {
                         document.getElementById("id_repaginatenow").checked = 1;
                     }
                     if (selectedValue === "question") {
-                        quizaccess_quiztimer_updatequiznavmethod(' . $quizid . ', 3);
+                        quizaccess_quiztimer_updatequiznavmethod(quizid, 3);
                         document.getElementById("id_timelimit_number").disabled = true;
                         document.getElementById("id_timelimit_number").value = "";
                         document.getElementById("id_timelimit_timeunit").disabled = true;
@@ -227,7 +234,7 @@ class quizaccess_quiztimer extends \mod_quiz\local\access_rule_base {
                         document.getElementById("id_repaginatenow").checked = 1;
                     }
                     if (selectedValue === "page") {
-                        quizaccess_quiztimer_updatequiznavmethod(' . $quizid . ', 4);
+                        quizaccess_quiztimer_updatequiznavmethod(quizid, 4);
                         document.getElementById("id_timelimit_number").disabled = true;
                         document.getElementById("id_timelimit_number").value = "";
                         document.getElementById("id_timelimit_timeunit").disabled = true;
@@ -471,6 +478,33 @@ function quizaccess_quiztimer_show_timer_based_on_option($option) {
             $sql = "SELECT * FROM {quizaccess_timedsections} WHERE quizid = :quizid ORDER BY sectionid ASC";
             $params = ['quizid' => $quizid];
             $quiz = $DB->get_records_sql($sql, $params);
+            if (empty($quiz)) {
+                // No per-section times exist yet (e.g. quiz created but no times configured).
+                // Seed defaults so the attempt timer can function without warnings.
+                $defaultunit = (int) (get_config('quizaccess_quiztimer', 'timedsectionsunit') ?: 2);
+                $defaultvalue = (int) (get_config('quizaccess_quiztimer', 'timedsections') ?: 10);
+                switch ($defaultunit) {
+                    case 3:
+                        $defaultvalue *= 3600;
+                        break;
+                    case 2:
+                        $defaultvalue *= 60;
+                        break;
+                }
+
+                $sections = $DB->get_records('quiz_sections', ['quizid' => $quizid], 'id ASC', 'id');
+                foreach ($sections as $section) {
+                    $record = new stdClass();
+                    $record->quizid = $quizid;
+                    $record->sectionid = (int) $section->id;
+                    $record->timeunit = $defaultunit;
+                    $record->timevalue = $defaultvalue;
+                    $record->timecreated = time();
+                    $record->timemodified = time();
+                    $DB->insert_record('quizaccess_timedsections', $record);
+                }
+                $quiz = $DB->get_records_sql($sql, $params);
+            }
             $totalquiztime = array_sum(array_column($quiz, 'timevalue'));
             $originaltime = $totalquiztime;
 
@@ -485,7 +519,7 @@ function quizaccess_quiztimer_show_timer_based_on_option($option) {
                 $quizoverride = $DB->get_record('quiz_overrides',
                 ['quiz' => $quizid, 'groupid' => $currentgroupid], 'timelimit', IGNORE_MISSING);
             }
-            if ($quizoverride) {
+            if ($quizoverride && $totalquiztime > 0) {
                 $timefraction = $quizoverride->timelimit / $totalquiztime;
                 foreach ($quiz as $quizdata) {
                     $quizdata->timevalue = round($quizdata->timevalue * $timefraction, 0);
@@ -500,7 +534,12 @@ function quizaccess_quiztimer_show_timer_based_on_option($option) {
             // Check if the 'page' parameter is present in the URL.
             $currentpage = optional_param('page', $attempt->get_currentpage(), PARAM_INT);
             $sectionkey = $currentpage;
-            $sectiontime = $tiempos[$currentpage];
+            $defaultsectiontime = (int) (get_config('quizaccess_quiztimer', 'timedsections') ?: 10);
+            if (!isset($tiempos[$currentpage])) {
+                $sectiontime = $defaultsectiontime;
+            } else {
+                $sectiontime = $tiempos[$currentpage];
+            }
 
 
 
@@ -571,6 +610,33 @@ function quizaccess_quiztimer_show_timer_based_on_option($option) {
             $sql = "SELECT * FROM {quizaccess_timedslots} WHERE quizid = :quizid ORDER BY slot ASC";
             $params = ['quizid' => $quizid];
             $quiz = $DB->get_records_sql($sql, $params);
+            if (empty($quiz)) {
+                // No per-slot times exist yet (e.g. quiz created but no times configured).
+                // Seed defaults so the attempt timer can function without warnings.
+                $defaultunit = (int) (get_config('quizaccess_quiztimer', 'timedslotsunit') ?: 1);
+                $defaultvalue = (int) (get_config('quizaccess_quiztimer', 'timedslots') ?: 60);
+                switch ($defaultunit) {
+                    case 3:
+                        $defaultvalue *= 3600;
+                        break;
+                    case 2:
+                        $defaultvalue *= 60;
+                        break;
+                }
+
+                $slots = $DB->get_records('quiz_slots', ['quizid' => $quizid], 'slot ASC', 'id,slot');
+                foreach ($slots as $slot) {
+                    $record = new stdClass();
+                    $record->quizid = $quizid;
+                    $record->slot = (int) $slot->id;
+                    $record->timeunit = $defaultunit;
+                    $record->timevalue = $defaultvalue;
+                    $record->timecreated = time();
+                    $record->timemodified = time();
+                    $DB->insert_record('quizaccess_timedslots', $record);
+                }
+                $quiz = $DB->get_records_sql($sql, $params);
+            }
             $quizoverride = false;
             $totalquiztime = array_sum(array_column($quiz, 'timevalue'));
             $originaltime = $totalquiztime;
@@ -602,7 +668,12 @@ function quizaccess_quiztimer_show_timer_based_on_option($option) {
 
             $allSlots = $attempt->get_slots();
             $slotIndex = array_search($questionid, $allSlots);
-            $slotTime = $tiempos[$slotIndex];
+            $defaultslottime = (int) (get_config('quizaccess_quiztimer', 'timedslots') ?: 60);
+            if ($slotIndex === false || !isset($tiempos[$slotIndex])) {
+                $slotTime = $defaultslottime;
+            } else {
+                $slotTime = $tiempos[$slotIndex];
+            }
 
 
             $data = new stdClass;
@@ -672,6 +743,32 @@ function quizaccess_quiztimer_show_timer_based_on_option($option) {
             $quizslots = $DB->get_records('quiz_slots', ['quizid' => $quizid]);
             $quizsections = $DB->get_records('quiz_sections', ['quizid' => $quizid]);
 
+            if (empty($quiz)) {
+                // No per-section times exist yet - seed defaults for all sections.
+                $defaultunit = (int) (get_config('quizaccess_quiztimer', 'timedsectionsunit') ?: 2);
+                $defaultvalue = (int) (get_config('quizaccess_quiztimer', 'timedsections') ?: 10);
+                switch ($defaultunit) {
+                    case 3:
+                        $defaultvalue *= 3600;
+                        break;
+                    case 2:
+                        $defaultvalue *= 60;
+                        break;
+                }
+
+                foreach ($quizsections as $section) {
+                    $record = new stdClass();
+                    $record->quizid = $quizid;
+                    $record->sectionid = (int) $section->id;
+                    $record->timeunit = $defaultunit;
+                    $record->timevalue = $defaultvalue;
+                    $record->timecreated = time();
+                    $record->timemodified = time();
+                    $DB->insert_record('quizaccess_timedsections', $record);
+                }
+                $quiz = $DB->get_records('quizaccess_timedsections', ['quizid' => $quizid]);
+            }
+
             $tiempos = [];
 
             // Create an array to store the pages and time values of each section.
@@ -730,7 +827,7 @@ function quizaccess_quiztimer_show_timer_based_on_option($option) {
                 $quizoverride = $DB->get_record('quiz_overrides',
                 ['quiz' => $quizid, 'groupid' => $currentgroupid], 'timelimit', IGNORE_MISSING);
             }
-            if ($quizoverride) {
+            if ($quizoverride && $totalquiztime > 0) {
                 $timefraction = $quizoverride->timelimit / $totalquiztime;
                 foreach ($tiempos as $key => $value) {
                     $tiempos[$key] = round($value * $timefraction, 0);
@@ -740,7 +837,12 @@ function quizaccess_quiztimer_show_timer_based_on_option($option) {
             // Check if the 'page' parameter is present in the URL.
             $currentpage = optional_param('page', $attempt->get_currentpage(), PARAM_INT);
             $sectionkey = $currentpage;
-            $sectiontime = $tiempos[$currentpage];
+            $defaultpagetime = (int) (get_config('quizaccess_quiztimer', 'timedsections') ?: 10);
+            if (!isset($tiempos[$currentpage])) {
+                $sectiontime = $defaultpagetime;
+            } else {
+                $sectiontime = $tiempos[$currentpage];
+            }
 
             $data = new stdClass;
             $data->id = $id;

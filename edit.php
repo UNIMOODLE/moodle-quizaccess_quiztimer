@@ -44,7 +44,7 @@
 $scrollpos = optional_param('scrollpos', '', PARAM_INT);
 
 list($thispageurl, $contexts, $cmid, $cm, $quiz, $pagevars) =
-        question_edit_setup('editq', '/mod/quiz/edit.php', true);
+        question_edit_setup('editq', '/mod/quiz/edit.php');
 
 require_capability('quizaccess/quiztimer:manage', context_module::instance($PAGE->cm->id), $USER->id, true,
     $errormessage = 'nopermissions', $stringfile = '');

@@ -58,16 +58,24 @@ define(function() {
         quiztimercountdown.style.maxWidth = "max-content";
         quiztimercountdown.style.marginLeft = "auto";
 
-        var existingDiv = document.querySelector('.container-fluid.tertiary-navigation');
-        if (existingDiv) {
-            existingDiv.parentNode.insertBefore(quiztimercountdown, existingDiv.nextSibling);
+        var host =
+            document.querySelector('.container-fluid.tertiary-navigation') ||
+            document.querySelector('.tertiary-navigation') ||
+            document.querySelector('.secondary-navigation') ||
+            document.querySelector('.activity-header') ||
+            document.getElementById('page-header') ||
+            document.getElementById('region-main');
+        if (host) {
+            host.appendChild(quiztimercountdown);
         }
 
-        var headingElement = document.querySelectorAll(".container-fluid.tertiary-navigation");
-
         function updateCountdownTimer(endTime) {
-            var countdownElement = document.getElementById(countdownID);
             var countdownInterval = setInterval(function() {
+                var countdownElement = document.getElementById(countdownID);
+                if (!countdownElement) {
+                    clearInterval(countdownInterval);
+                    return;
+                }
                 var currentTime = Math.floor(Date.now() / 1000);
                 var timeRemaining = endTime - currentTime;
 
@@ -95,13 +103,6 @@ define(function() {
         }
 
         updateCountdownTimer(timefinish);
-
-        headingElement.forEach(function(heading) {
-            var textoElement = document.getElementById("countdown" + section);
-            if (heading && textoElement) {
-                heading.appendChild(textoElement);
-            }
-        });
     };
 
     return {
