@@ -46,9 +46,11 @@ $scrollpos = optional_param('scrollpos', '', PARAM_INT);
 list($thispageurl, $contexts, $cmid, $cm, $quiz, $pagevars) =
         question_edit_setup('editq', '/mod/quiz/edit.php');
 
-require_capability('quizaccess/quiztimer:manage', context_module::instance($PAGE->cm->id), $USER->id, true,
-    $errormessage = 'nopermissions', $stringfile = '');
-$defaultcategoryobj = question_make_default_categories($contexts->all());
+// Match core quiz edit access checks/context handling.
+require_capability('mod/quiz:manage', $contexts->lowest());
+require_capability('quizaccess/quiztimer:manage', $contexts->lowest());
+
+$defaultcategoryobj = question_get_default_category($contexts->lowest()->id, true);
 $defaultcategory = $defaultcategoryobj->id . ',' . $defaultcategoryobj->contextid;
 
 $quizhasattempts = quiz_has_attempts($quiz->id);
@@ -64,9 +66,6 @@ require_login($course);
 $quizobj = new \mod_quiz\quiz_settings($quiz, $cm, $course);
 
 $structure = $quizobj->get_structure();
-
-// You need mod/quiz:manage in addition to question capabilities to access this page.
-require_capability('mod/quiz:manage', $contexts->lowest());
 
 // Process commands ============================================================.
 
